@@ -1,3 +1,14 @@
+function parseJwt (token) {
+    try {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch(e) { return {}; }
+}
+
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -107,7 +118,8 @@ async function handleLogin() {
             localStorage.setItem('usame_token', data.data.token);
             localStorage.setItem('usame_reg_id', data.data.registrationId);
             showToast('Login Successful!');
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+            const decoded = parseJwt(data.data.token);
+            setTimeout(() => { window.location.href = decoded.role === 'ADMIN' ? 'admin.html' : 'dashboard.html'; }, 1000);
         } else showToast(data.error || 'Login failed', 'error');
     } catch (err) { showToast('Server error during login', 'error'); }
 }
@@ -144,7 +156,8 @@ async function handleLoginVerifyOtp() {
             localStorage.setItem('usame_token', data.data.token);
             localStorage.setItem('usame_reg_id', data.data.registrationId);
             showToast('Login Successful!');
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+            const decoded = parseJwt(data.data.token);
+            setTimeout(() => { window.location.href = decoded.role === 'ADMIN' ? 'admin.html' : 'dashboard.html'; }, 1000);
         } else showToast(data.error || 'Invalid OTP', 'error');
     } catch (err) { showToast('Server error', 'error'); }
 }
@@ -225,6 +238,7 @@ async function handleFridVerify() {
 function initAuth() {
     // Tabs
     document.getElementById('tab-login')?.addEventListener('click', () => switchTab('login'));
+    document.getElementById('tab-admin')?.addEventListener('click', () => switchTab('admin'));
     document.getElementById('tab-register')?.addEventListener('click', () => switchTab('register'));
 
     // Login Modes
@@ -246,6 +260,27 @@ function initAuth() {
         e.preventDefault();
         const mode = document.querySelector('input[name="login_mode"]:checked').value;
         if (mode === 'password') handleLogin();
+    });
+
+    // Admin Form
+    document.getElementById('form-admin')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const identifier = document.getElementById('admin_mobile').value;
+        const password = document.getElementById('admin_password').value;
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('usame_token', data.data.token);
+                localStorage.setItem('usame_reg_id', data.data.registrationId);
+                showToast('Admin Login Successful!');
+                setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+            } else showToast(data.error || 'Login failed', 'error');
+        } catch (err) { showToast('Server error during login', 'error'); }
     });
 
     // Login Form (OTP)
