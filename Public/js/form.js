@@ -213,24 +213,30 @@ async function saveStep(stepNum) {
         payload.q5_rec_no_date = document.getElementById('q5_rec_no_date').value;
         payload.q6_renewal = document.getElementById('q6_renewal').value;
         
-        if (document.getElementById('q5_upload').files.length) payload.q5_upload = await uploadFile('q5_upload');
-        else if (draftData.q5_upload) payload.q5_upload = draftData.q5_upload;
+        if (document.getElementById('q5_upload').files.length) {
+            const url = await uploadFile('q5_upload');
+            if (url) payload.q5_upload = url;
+        } else if (draftData.q5_upload) payload.q5_upload = draftData.q5_upload;
     } else if (stepNum === 2) {
         payload.q7_society = document.getElementById('q7_society').value;
         payload.q8_gst = document.getElementById('q8_gst').value;
         payload.q10_land = document.getElementById('q10_land').value;
         
         for (let id of ['q7_upload', 'q8_upload', 'q10_upload']) {
-            if (document.getElementById(id).files.length) payload[id] = await uploadFile(id);
-            else if (draftData[id]) payload[id] = draftData[id];
+            if (document.getElementById(id).files.length) {
+                const url = await uploadFile(id);
+                if (url) payload[id] = url;
+            } else if (draftData[id]) payload[id] = draftData[id];
         }
     } else if (stepNum === 3) {
         payload.q11_bank = document.getElementById('q11_bank').value;
         payload.q12_manager = document.getElementById('q12_manager').value;
         payload.q13_status = document.getElementById('q13_status').value;
         
-        if (document.getElementById('q11_upload').files.length) payload.q11_upload = await uploadFile('q11_upload');
-        else if (draftData.q11_upload) payload.q11_upload = draftData.q11_upload;
+        if (document.getElementById('q11_upload').files.length) {
+            const url = await uploadFile('q11_upload');
+            if (url) payload.q11_upload = url;
+        } else if (draftData.q11_upload) payload.q11_upload = draftData.q11_upload;
         
         payload.q9_members = getTableData('table-q9');
     } else if (stepNum === 4) {
@@ -239,8 +245,12 @@ async function saveStep(stepNum) {
         
         for (let id of ['q14_upload', 'q16_upload', 'q17_upload', 'justification_upload']) {
             const el = document.getElementById(id);
-            if (el && el.files.length) payload[id] = await uploadFile(id);
-            else if (draftData[id]) payload[id] = draftData[id];
+            if (el && el.files.length) {
+                const url = await uploadFile(id);
+                if (url) payload[id] = url;
+            } else if (draftData[id]) {
+                payload[id] = draftData[id];
+            }
         }
         
         payload.q15_staff = getTableData('table-q15');

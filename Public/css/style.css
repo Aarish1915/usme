@@ -108,3 +108,38 @@ input:focus, select:focus {
 .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
 .hidden { display: none !important; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 15px;
+        text-align: center;
+        gap: 15px;
+    }
+    .brand {
+        justify-content: center;
+    }
+    main {
+        padding: 20px 15px;
+    }
+    .glass-card {
+        padding: 25px 20px;
+    }
+    .btn-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .btn-row .btn {
+        width: 100% !important;
+    }
+    .wizard-steps {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

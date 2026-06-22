@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
             
             const payload = await res.json();
-            if (!payload.ok) throw new Error(payload.error || 'Failed to fetch details');
+            if (!(payload.ok || payload.success)) throw new Error(payload.error || 'Failed to fetch details');
             
             const app = payload.data;
             

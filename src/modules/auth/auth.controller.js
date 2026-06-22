@@ -24,6 +24,7 @@ async function sendOtp(req, res) {
     const otp = generateOtp();
     otpStore.set(mobile, { otp, name, password, type: 'register' });
     
+    console.log(`\n=========================================\n[DEV] REGISTRATION OTP for ${mobile}: ${otp}\n=========================================\n`);
     await sendSms(mobile, `Welcome to USAME! Your registration OTP is: ${otp}`);
     return res.json({ success: true, message: 'OTP sent successfully to ' + mobile, devOtp: otp });
 }
@@ -118,6 +119,7 @@ async function sendLoginOtp(req, res) {
     const otp = generateOtp();
     otpStore.set(mobile, { otp, type: 'login' });
     
+    console.log(`\n=========================================\n[DEV] LOGIN OTP for ${mobile}: ${otp}\n=========================================\n`);
     await sendSms(mobile, `Your USAME login OTP is: ${otp}`);
     return res.json({ success: true, message: 'Login OTP sent successfully', devOtp: otp });
 }
@@ -165,6 +167,7 @@ async function forgotPasswordSendOtp(req, res) {
     const otp = generateOtp();
     otpStore.set(mobile, { otp, type: 'reset_password' });
     
+    console.log(`\n=========================================\n[DEV] RESET PASSWORD OTP for ${mobile}: ${otp}\n=========================================\n`);
     await sendSms(mobile, `Your USAME password reset OTP is: ${otp}`);
     return res.json({ success: true, message: 'Password reset OTP sent successfully', devOtp: otp });
 }

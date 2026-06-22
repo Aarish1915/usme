@@ -9,13 +9,13 @@ function switchTab(tab) {
     document.getElementById('tab-login')?.classList.toggle('active', tab === 'login');
     document.getElementById('tab-admin')?.classList.toggle('active', tab === 'admin');
     document.getElementById('tab-register')?.classList.toggle('active', tab === 'register');
-    
+
     document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
     document.getElementById('form-admin').classList.toggle('hidden', tab !== 'admin');
     document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
     document.getElementById('form-forgot-password').classList.add('hidden');
     document.getElementById('form-forgot-reg-id').classList.add('hidden');
-    
+
     if (tab === 'login') {
         document.querySelector('input[name="login_mode"][value="password"]').checked = true;
         toggleLoginMode('password');
@@ -225,9 +225,8 @@ async function handleFridVerify() {
 function initAuth() {
     // Tabs
     document.getElementById('tab-login')?.addEventListener('click', () => switchTab('login'));
-    document.getElementById('tab-admin')?.addEventListener('click', () => switchTab('admin'));
     document.getElementById('tab-register')?.addEventListener('click', () => switchTab('register'));
-    
+
     // Login Modes
     document.querySelectorAll('input[name="login_mode"]').forEach(radio => {
         radio.addEventListener('change', (e) => toggleLoginMode(e.target.value));
@@ -243,32 +242,10 @@ function initAuth() {
     document.getElementById('btn-reg-back')?.addEventListener('click', resetReg);
 
     // Login Form (Password)
-    document.getElementById('form-login')?.addEventListener('submit', (e) => { 
-        e.preventDefault(); 
+    document.getElementById('form-login')?.addEventListener('submit', (e) => {
+        e.preventDefault();
         const mode = document.querySelector('input[name="login_mode"]:checked').value;
         if (mode === 'password') handleLogin();
-    });
-
-    // Admin Form
-    document.getElementById('form-admin')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const identifier = document.getElementById('admin_mobile').value;
-        const password = document.getElementById('admin_password').value;
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier, password })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('usame_token', data.data.token);
-                showToast('Admin Login Successful!');
-                setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
-            } else {
-                showToast(data.error || 'Login failed', 'error');
-            }
-        } catch (err) { showToast('Server error during login', 'error'); }
     });
 
     // Login Form (OTP)

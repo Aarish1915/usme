@@ -181,15 +181,37 @@ async function submitApplication(registrationId, userId, fullSchema, computeNonM
                 }))
             });
         }
+
+        // Normalize Documents
+        const docsToInsert = [];
+        const docMapping = {
+            q5_upload: 'RECOGNITION_LETTER',
+            q7_upload: 'SOCIETY_REGISTRATION',
+            q8_upload: 'GST_CERTIFICATE',
+            q10_upload: 'LAND_DOCUMENTS',
+            q11_upload: 'BANK_PASSBOOK',
+            q14_upload: 'AFFIDAVIT_NON_COERCION',
+            q16_upload: 'AFFIDAVIT_COMMUNAL_HARMONY',
+            q17_upload: 'AFFIDAVIT_TMA_PAI',
+            justification_upload: 'JUSTIFICATION_DOCUMENT'
+        };
+
+        for (const [key, docType] of Object.entries(docMapping)) {
+            if (validated[key]) {
+                docsToInsert.push({
+                    application_id: app.id,
+                    document_type: docType,
+                    s3_key: validated[key]
+                });
+            }
+        }
+
+        if (docsToInsert.length > 0) {
+            await tx.documents.createMany({ data: docsToInsert, skipDuplicates: true });
+        }
     });
 
-    // Enqueue PDF job (non-blocking).
-    try {
-        const pdfQueue = require('../../common/utils/pdfQueue');
-        await pdfQueue.add('generate-final-pdf', { applicationId: app.id });
-    } catch (err) {
-        console.error('PDF queue enqueue failed', err);
-    }
+    // PDF generation is now handled synchronously when requested.
 
     return { ok: true, status: appStatus };
 }

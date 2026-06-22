@@ -12,6 +12,11 @@
         .action-card { text-align: center; cursor: pointer; transition: 0.3s; }
         .action-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .action-card h3 { color: var(--primary); margin-bottom: 10px; }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            #existing-app-section > div { flex-direction: column; text-align: center; gap: 20px; }
+            #existing-app-section > div > div:last-child { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -31,17 +36,34 @@
     <main>
         <h2>Welcome to your Portal</h2>
         
-        <div class="dashboard-grid">
+        <div id="loading-section" style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px;"></i> Loading your application data...
+        </div>
+
+        <div class="dashboard-grid" id="new-app-grid" style="display: none;">
             <div class="glass-card action-card" id="btn-new-app">
                 <h3>📝 Start New Application</h3>
                 <p>Apply for recognition of a minority educational institution.</p>
             </div>
-            <div class="glass-card action-card">
-                <h3>📂 View Submitted Applications</h3>
-                <p>Check the status of your previous submissions.</p>
+        </div>
+
+        <div id="existing-app-section" style="display: none; margin-top: 30px;">
+            <h3 style="margin-bottom: 15px; color: #1e293b;">Your Application Status</h3>
+            <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; padding: 25px;">
+                <div>
+                    <h4 style="font-size: 18px; margin-bottom: 5px; color: var(--primary);">Application ID: <span id="display-reg-id"></span></h4>
+                    <p style="color: #64748b; font-size: 14px; margin-bottom: 10px;">Institution: <strong id="display-inst-name" style="color: #333;">Not set</strong></p>
+                    <span id="display-status" style="padding: 6px 15px; border-radius: 50px; font-weight: 600; font-size: 13px;"></span>
+                </div>
+                <div style="display: flex; gap: 15px; flex-direction: column;">
+                    <button class="btn btn-primary" id="btn-resume-app" style="display: none;">Resume Draft</button>
+                    <button class="btn btn-secondary" id="btn-view-app" style="display: none;">View Form Details</button>
+                    <button class="btn btn-primary" id="btn-download-pdf" style="display: none; background-color: #10b981; border-color: #10b981;">Download PDF</button>
+                </div>
             </div>
         </div>
     </main>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="js/dashboard.js"></script>
 </body>

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>USAME - Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -134,6 +135,23 @@
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
 
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            body { flex-direction: column; }
+            .sidebar { position: relative; width: 100%; height: auto; padding: 15px 20px; flex-direction: row; justify-content: space-between; align-items: center; z-index: 100; }
+            .sidebar-brand { margin-bottom: 0; }
+            .nav-item { display: none; }
+            .sidebar-footer { margin-top: 0; padding-top: 0; border: none; }
+            .btn-logout { width: auto; padding: 8px 15px; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .table-container { padding: 20px 15px; }
+            .modal-content { height: 90vh; width: 95%; flex-direction: column; overflow-y: auto; }
+            .modal-body-container { flex-direction: column; overflow: visible; }
+            .modal-info-panel { max-width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .modal-pdf-panel { min-height: 500px; }
+        }
     </style>
 </head>
 <body>

@@ -20,8 +20,8 @@ async function sendSms(to, body) {
         console.log(`SMS sent to ${to}, SID: ${message.sid}`);
         return message;
     } catch (error) {
-        console.error('Error sending SMS via Twilio:', error);
-        throw error;
+        console.error('Error sending SMS via Twilio:', error.message);
+        return false;
     }
 }
 

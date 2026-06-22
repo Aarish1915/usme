@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 const { s3Bucket, awsRegion, awsAccessKey, awsSecretKey, awsEndpoint } = require('../config');
 
 const s3 = new AWS.S3({
-    region: awsRegion,
+    region: 'us-east-1', // Required for Supabase S3 signature validation
     endpoint: awsEndpoint ? new AWS.Endpoint(awsEndpoint) : undefined,
     accessKeyId: awsAccessKey,
     secretAccessKey: awsSecretKey,
