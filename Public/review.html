@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Application - USAME</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .review-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .review-item { display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding: 12px 0; }
+        .review-item:last-child { border-bottom: none; }
+        .review-label { font-weight: 600; color: #4b5563; width: 45%; padding-right: 15px; line-height: 1.4; }
+        .hi-label { display: block; font-size: 0.85em; font-weight: normal; color: #6b7280; margin-top: 2px; }
+        .review-value { font-weight: 500; color: #111827; width: 55%; text-align: right; word-break: break-word; }
+        
+        .success-box { text-align: center; display: none; padding: 40px; }
+        .success-icon { font-size: 50px; color: var(--success); margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; table-layout: fixed; }
+        th, td { border: 1px solid #d1d5db; padding: 10px; text-align: left; font-size: 13px; word-wrap: break-word; }
+        th { background: #f3f4f6; font-weight: 600; color: #374151; text-align: center; }
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 10px; border-radius: 6px; border: 1px solid #e5e7eb; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div><h1>Application Review</h1><p>Final Check Before Submission</p></div>
+        </div>
+        <button class="btn btn-secondary" style="padding: 8px 15px; width: auto;" id="btn-rev-back">Back to Edit</button>
+    </header>
+
+    <main>
+        <div class="glass-card" id="review-container">
+            <h2 style="text-align: left;">Please review your details carefully</h2>
+            <p style="margin-bottom: 20px; color: var(--danger); font-weight: 500;">Warning: Once submitted, you cannot edit this application.</p>
+
+            <div class="review-box">
+                <h3>1. Basic Details</h3>
+                <div class="review-item"><div class="review-label">1. Institution Name<span class="hi-label">संस्थान / विद्यालय का नाम</span></div><div class="review-value" id="rev_q1">Loading...</div></div>
+                <div class="review-item"><div class="review-label">2. Address<span class="hi-label">पत्र व्यवहार का पूर्ण पता</span></div><div class="review-value" id="rev_q2">Loading...</div></div>
+                <div class="review-item"><div class="review-label">3. Established Year<span class="hi-label">स्थापना वर्ष</span></div><div class="review-value" id="rev_q3">Loading...</div></div>
+                <div class="review-item"><div class="review-label">4. Recognition Details<span class="hi-label">मान्यता / सम्बद्धता विवरण</span></div><div class="review-value" id="rev_q4">Loading...</div></div>
+                <div class="review-item"><div class="review-label">5. Recognition No/Date<span class="hi-label">मान्यता पत्र संख्या एवं दिनांक</span></div><div class="review-value" id="rev_q5">Loading...</div></div>
+                <div class="review-item"><div class="review-label">6. Renewal Details<span class="hi-label">पंजीकरण या नवीनीकरण संख्या</span></div><div class="review-value" id="rev_q6">Loading...</div></div>
+            </div>
+
+            <div class="review-box">
+                <h3>2. Society & Land Details</h3>
+                <div class="review-item"><div class="review-label">7. Society Details<span class="hi-label">सोसाइटी / ट्रस्ट पंजीकरण</span></div><div class="review-value" id="rev_q7">Loading...</div></div>
+                <div class="review-item"><div class="review-label">8. GST Number<span class="hi-label">जीएसटी पंजीकरण संख्या</span></div><div class="review-value" id="rev_q8">Loading...</div></div>
+                <div class="review-item"><div class="review-label">10. Land Ownership<span class="hi-label">स्वामित्व / पट्टा विवरण</span></div><div class="review-value" id="rev_q10">Loading...</div></div>
+            </div>
+
+            <div class="review-box">
+                <h3>3. Management & Banking</h3>
+                <div class="review-item"><div class="review-label">11. Bank Account<span class="hi-label">खाता सं., IFSC, बैंक का नाम</span></div><div class="review-value" id="rev_q11">Loading...</div></div>
+                <div class="review-item"><div class="review-label">12. Managed By<span class="hi-label">किसके द्वारा संचालित है</span></div><div class="review-value" id="rev_q12">Loading...</div></div>
+                <div class="review-item"><div class="review-label">13. Status<span class="hi-label">प्रबन्ध की स्थिति</span></div><div class="review-value" id="rev_q13">Loading...</div></div>
+                
+                <h4 style="margin-top: 15px;">9. Management Committee Members <span class="hi-label" style="display:inline;">(प्रारूप I)</span></h4>
+                <div class="table-responsive">
+                    <table id="rev_q9_table">
+                        <thead><tr><th>Name</th><th>Father's Name</th><th>DOB</th><th>Designation</th><th>Address</th><th>Phone</th><th>Qualification</th><th>Experience</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="review-box">
+                <h3>4. Staff & Students</h3>
+                <div class="review-item"><div class="review-label">18. Fee Details<span class="hi-label">निर्धारित शुल्क का विवरण</span></div><div class="review-value" id="rev_q18">Loading...</div></div>
+                <div class="review-item"><div class="review-label">20. Other Details<span class="hi-label">अन्य विवरण</span></div><div class="review-value" id="rev_q20">Loading...</div></div>
+                
+                <h4 style="margin-top: 15px;">15. Teaching & Non-Teaching Staff <span class="hi-label" style="display:inline;">(प्रारूप II)</span></h4>
+                <div class="table-responsive">
+                    <table id="rev_q15_table">
+                        <colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
+                        <thead><tr><th>Name</th><th>Designation</th><th>Address & Phone</th><th>Profession</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <h4 style="margin-top: 15px;">19. Student Strength <span class="hi-label" style="display:inline;">(प्रारूप III)</span></h4>
+                <div class="table-responsive">
+                    <table id="rev_q19_table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="vertical-align:bottom">Class</th>
+                                <th colspan="3">Minority</th>
+                                <th colspan="3">Others</th>
+                                <th rowspan="2" style="vertical-align:bottom">Grand Total</th>
+                            </tr>
+                            <tr>
+                                <th>Boys</th><th>Girls</th><th>Total</th>
+                                <th>Boys</th><th>Girls</th><th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="review-box" id="docs-box">
+                <h3>5. Uploaded Documents</h3>
+                <!-- Document links will be injected here -->
+            </div>
+
+            <button class="btn" style="background: var(--primary);" id="btn-final-submit" >Acknowledge & Final Submit</button>
+        </div>
+
+        <div class="glass-card success-box" id="success-container">
+            <div class="success-icon">✔️</div>
+            <h2>Application Submitted Successfully!</h2>
+            <p style="margin-bottom: 30px;">Your application has been received by the Uttarakhand State Minority Education Authority.</p>
+            <button class="btn" style="background: #10b981; max-width: 300px; margin: 0 auto;" id="btn-dl-pdf">📄 Download Official PDF</button>
+            <br>
+            <button class="btn btn-secondary" style="max-width: 300px; margin: 0 auto;" id="btn-rev-dash">Go to Dashboard</button>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">Message here</div>
+
+    <script src="js/review.js"></script>
+</body>
+</html>

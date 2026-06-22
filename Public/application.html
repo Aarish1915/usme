@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form - USAME</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .wizard-steps { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
+        .wizard-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background: #e5e7eb; z-index: 1; }
+        .step-indicator { background: white; border: 3px solid #e5e7eb; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--text-muted); position: relative; z-index: 2; transition: 0.3s; }
+        .step-indicator.active { border-color: var(--primary); background: var(--primary); color: white; }
+        
+        .form-section { display: none; animation: fadeIn 0.5s; }
+        .form-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-row { display: flex; justify-content: space-between; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #d1d5db; padding: 10px; text-align: left; }
+        th { background: #f9fafb; font-weight: 600; font-size: 13px; }
+        td input { width: 100%; border: none; background: transparent; padding: 5px; font-size: 13px; }
+        .dynamic-table-wrapper { overflow-x: auto; margin-bottom: 15px; }
+        .row-add-btn { background: var(--success); color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; margin-bottom: 10px; }
+        .row-del-btn { background: var(--danger); color: white; padding: 5px; border-radius: 5px; border: none; cursor: pointer; }
+        .bi-label { display: block; font-weight: 600; color: #1f2937; margin-bottom: 8px; }
+        .hi-label { display: block; font-size: 0.85em; color: #6b7280; font-weight: normal; margin-top: 2px; }
+        .tbl-input-num { width: 60px !important; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div><h1 id="page_title">Application Form</h1><p id="page_subtitle">Minority Educational Institution Recognition</p></div>
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <select id="lang_select" style="padding: 6px; border-radius: 6px;">
+                <option value="en">English</option>
+                <option value="hi">हिंदी (Hindi)</option>
+            </select>
+            <button type="button" class="btn btn-secondary" style="padding: 8px 15px; width: auto;" id="btn_back">Back to Dashboard</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="glass-card">
+            <div class="wizard-steps">
+                <div class="step-indicator active" id="ind-1">1</div>
+                <div class="step-indicator" id="ind-2">2</div>
+                <div class="step-indicator" id="ind-3">3</div>
+                <div class="step-indicator" id="ind-4">4</div>
+            </div>
+
+            <form id="multi-step-form" onsubmit="event.preventDefault();">
+                
+                <!-- STEP 1: Basic Details -->
+                <div class="form-section active" id="step-1">
+                    <h3>Step 1: Basic Institution Details</h3>
+                    <div class="form-group">
+                        <label class="bi-label">1. Institution / School Name <span class="hi-label">संस्थान / विद्यालय का नाम</span></label>
+                        <input type="text" id="q1_name" placeholder="e.g. Alpine Minority School">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">2. Full Correspondence Address (with PIN) <span class="hi-label">पत्र व्यवहार का पूर्ण पता (पिन कोड सहित)</span></label>
+                        <input type="text" id="q2_address" placeholder="Village Road, Laksar, Haridwar, Uttarakhand 247663">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">3. Year of Establishment <span class="hi-label">संस्थान / विद्यालय का स्थापना वर्ष</span></label>
+                        <input type="number" id="q3_year" placeholder="e.g. 2015">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">4. Recognition / Affiliation Details (Board / Dept) <span class="hi-label">मान्यता / सम्बद्धता विवरण (विद्यालयी परिषद / शिक्षा विभाग)</span></label>
+                        <input type="text" id="q4_rec_details" placeholder="Uttarakhand Board of School Education — Affiliated">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">5. Recognition Letter Number and Date <span class="hi-label">मान्यता पत्र / सम्बद्धता पत्र संख्या एवं दिनांक</span></label>
+                        <input type="text" id="q5_rec_no_date" placeholder="UB/REC/2015-07; 2015-07-10">
+                        <input type="file" id="q5_upload" style="margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">6. Registration / Renewal Number and Date with Education Council <span class="hi-label">शिक्षा परिषद से पंजीकरण या नवीनीकरण संख्या व दिनांक</span></label>
+                        <input type="text" id="q6_renewal" placeholder="REG-2015-001; 2015-07-01">
+                    </div>
+                    
+                    <div class="btn-row">
+                        <div></div>
+                        <button type="button" class="btn" style="width: auto; padding: 10px 30px;" id="btn-next-1">Next & Auto-Save</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Society & Land Details -->
+                <div class="form-section" id="step-2">
+                    <h3>Step 2: Society/Trust & Land Details</h3>
+                    <div class="form-group">
+                        <label class="bi-label">7. Society / Trust / Company Registration Details and Bylaws <span class="hi-label">सोसाइटी / ट्रस्ट / कम्पनी पंजीकरण संख्या; नियमावली (बायलाज)</span></label>
+                        <input type="text" id="q7_society" placeholder="Society Reg No: S/UTK/2014/12345">
+                        <input type="file" id="q7_upload" style="margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">8. GST Registration Number <span class="hi-label">जीएसटी पंजीकरण संख्या</span></label>
+                        <input type="text" id="q8_gst" placeholder="07ABCDE1234F1Z5 (Optional)">
+                        <input type="file" id="q8_upload" style="margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">10. Land Ownership / Lease Details <span class="hi-label">संस्थान जिस भूमि पर स्थापित है उसका स्वामित्व / पट्टा / अनुज्ञप्ति विवरण</span></label>
+                        <input type="text" id="q10_land" placeholder="Title deed No. TD-2014-987; Registered in society name">
+                        <input type="file" id="q10_upload" style="margin-top: 10px;">
+                    </div>
+                    
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" style="width: auto; padding: 10px 30px;" id="btn-prev-2">Previous</button>
+                        <button type="button" class="btn" style="width: auto; padding: 10px 30px;" id="btn-next-2">Next & Auto-Save</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Management & Banking -->
+                <div class="form-section" id="step-3">
+                    <h3>Step 3: Management & Banking</h3>
+                    <div class="form-group">
+                        <label class="bi-label">11. Bank Account Details for Financial Transactions <span class="hi-label">वाणिज्यिक बैंक में खोले गये खाता का विवरण (खाता सं., IFSC, बैंक का नाम)</span></label>
+                        <input type="text" id="q11_bank" placeholder="A/C 123456789012; IFSC HDFC0000123; HDFC Bank">
+                        <input type="file" id="q11_upload" style="margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">12. Currently Managed By (Manager Name, Address, Mobile, Email) <span class="hi-label">वर्तमान में संस्था/विद्यालय किसके द्वारा संचालित है (प्रबंधक का नाम, पता, मोबाइल, ईमेल)</span></label>
+                        <input type="text" id="q12_manager" placeholder="Rajesh Kumar; Village Road, Laksar; 9876543210; rajesh@school.org">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">13. Status of Educational, Financial and Administrative Management <span class="hi-label">संस्थान के शैक्षिक, वित्तीय और प्रशासनिक प्रबन्ध की स्थिति</span></label>
+                        <input type="text" id="q13_status" placeholder="Audited FY2024; functioning normally">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="bi-label">9. Management Committee Details (Form I) <span class="hi-label">प्रबन्ध समिति / प्रधानाचार्य विवरण (प्रारूप I)</span></label>
+                        <button type="button" class="row-add-btn" id="btn-add-q9">+ Add Member</button>
+                        <div class="dynamic-table-wrapper">
+                            <table id="table-q9">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th><th>Father's Name</th><th>DOB</th><th>Position</th>
+                                        <th>Perm. Address & PIN</th><th>Phone/Email</th><th>Qualification</th><th>Experience</th><th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" style="width: auto; padding: 10px 30px;" id="btn-prev-3">Previous</button>
+                        <button type="button" class="btn" style="width: auto; padding: 10px 30px;" id="btn-next-3">Next & Auto-Save</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Staff, Students & Affidavits -->
+                <div class="form-section" id="step-4">
+                    <h3>Step 4: Staff, Students & Affidavits</h3>
+                    <div class="form-group">
+                        <label class="bi-label">14. Affidavit Non‑Coercion Upload (₹10 Stamp) <span class="hi-label">शपथ पत्र: छात्रों/कर्मचारियों को धार्मिक गतिविधि में बाध्य नहीं करेगा</span></label>
+                        <input type="file" id="q14_upload">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">16. Affidavit No Participation in Disrupting Communal Harmony (₹10 Stamp) <span class="hi-label">शपथ पत्र: साम्प्रदायिक सौहार्द भंग करने में भाग नहीं लिया</span></label>
+                        <input type="file" id="q16_upload">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">17. Affidavit TMA Pai Foundation Compliance (₹10 Stamp) <span class="hi-label">शपथ पत्र: TMA Pai Foundation निर्णय के अनुसार स्वघोषणा</span></label>
+                        <input type="file" id="q17_upload">
+                    </div>
+                    <div class="form-group">
+                        <label class="bi-label">18. Fee Details for Recognition <span class="hi-label">मान्यता हेतु निर्धारित शुल्क का विवरण</span></label>
+                        <input type="text" id="q18_fee" placeholder="₹5,000; Receipt No: FEE-2026-01; Date: 2026-06-10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="bi-label">15. List of Teaching and Non‑Teaching Staff (Format II) <span class="hi-label">शिक्षक एवं गैर‑शिक्षण कर्मचारियों की सूची (प्रारूप II)</span></label>
+                        <button type="button" class="row-add-btn" id="btn-add-q15">+ Add Staff</button>
+                        <div class="dynamic-table-wrapper">
+                            <table id="table-q15">
+                                <thead><tr><th>Name & Father's Name</th><th>Designation</th><th>Address & Phone</th><th>Profession</th><th>Action</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="bi-label">19. Class‑wise Current Student Strength (Format III) <span class="hi-label">कक्षावार वर्तमान छात्र संख्या (प्रारूप III)</span></label>
+                        <button type="button" class="row-add-btn" id="btn-add-q19">+ Add Class</button>
+                        <div class="dynamic-table-wrapper">
+                            <table id="table-q19">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="vertical-align:bottom">Class</th>
+                                        <th colspan="3" style="text-align:center">Minority</th>
+                                        <th colspan="3" style="text-align:center">Others</th>
+                                        <th rowspan="2" style="vertical-align:bottom">Grand Total</th>
+                                        <th rowspan="2" style="vertical-align:bottom">Action</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Boys</th><th>Girls</th><th>Total</th>
+                                        <th>Boys</th><th>Girls</th><th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="justification-group" style="display: none; background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px;">
+                        <label class="bi-label" style="color: #b45309;">⚠️ Non-Minority Limit Exceeded (> 15%) <span class="hi-label">गैर-अल्पसंख्यक सीमा 15% से अधिक हो गई है</span></label>
+                        <p style="font-size: 13px; color: #b45309; margin-bottom: 10px;">Your total non-minority enrollment exceeds 15%. To proceed, you must upload a signed Justification Request for an Admin Override.</p>
+                        <input type="file" id="justification_upload">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="bi-label">20. Other Details <span class="hi-label">अन्य विवरण</span></label>
+                        <textarea id="q20_other" rows="4" style="width:100%; border:1px solid #ccc; border-radius:8px; padding:10px;" placeholder="Land documents attached; special notes"></textarea>
+                    </div>
+                    
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" style="width: auto; padding: 10px 30px;" id="btn-prev-4">Previous</button>
+                        <button type="button" class="btn" style="width: auto; padding: 10px 30px; background: #10b981;" id="btn-submit-app">Review & Final Submit</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">Message here</div>
+
+    <script src="js/form.js"></script>
+</body>
+</html>
