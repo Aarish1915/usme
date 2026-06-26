@@ -29,7 +29,35 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 60px 20px 20px 20px; /* Increased top padding for fixed banner */
+}
+
+/* Official Government Banner */
+.gov-banner {
+    background-color: #0f172a; /* Very dark blue/slate typical of gov sites */
+    color: #f8fafc;
+    width: 100%;
+    padding: 8px 40px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+    .gov-banner {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 10px;
+        font-size: 0.7rem;
+    }
 }
 
 .brand-header {
