@@ -69,6 +69,8 @@ function resetReg() {
     document.getElementById('reg-part1').classList.remove('hidden');
     document.getElementById('reg-part2').classList.add('hidden');
     document.getElementById('reg-step2').classList.add('hidden');
+    document.getElementById('reg-title').textContent = 'Institution Registration';
+    document.getElementById('reg-subtitle').textContent = 'Please provide your institutional details to begin the enrollment process.';
 }
 
 function regNext() {
@@ -79,12 +81,16 @@ function regNext() {
     if (inst.reportValidity() && addr.reportValidity() && year.reportValidity()) {
         document.getElementById('reg-part1').classList.add('hidden');
         document.getElementById('reg-part2').classList.remove('hidden');
+        document.getElementById('reg-title').textContent = 'Applicant Details';
+        document.getElementById('reg-subtitle').textContent = 'Please provide your personal information to create the account.';
     }
 }
 
 function regBack1() {
     document.getElementById('reg-part1').classList.remove('hidden');
     document.getElementById('reg-part2').classList.add('hidden');
+    document.getElementById('reg-title').textContent = 'Institution Registration';
+    document.getElementById('reg-subtitle').textContent = 'Please provide your institutional details to begin the enrollment process.';
 }
 
 // --- Registration ---
