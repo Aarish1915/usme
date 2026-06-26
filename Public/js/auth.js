@@ -1,19 +1,21 @@
-function parseJwt (token) {
-    try {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch(e) { return {}; }
-}
-
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.className = 'toast show ' + type;
     setTimeout(() => { toast.className = 'toast'; }, 3000);
+}
+
+function setButtonLoading(btnId, isLoading, originalText = '') {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (isLoading) {
+        btn.dataset.originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> Loading...';
+        btn.disabled = true;
+    } else {
+        btn.innerHTML = btn.dataset.originalText || originalText;
+        btn.disabled = false;
+    }
 }
 
 function switchTab(tab) {
@@ -67,12 +69,16 @@ async function handleRegisterOtp() {
     const name = document.getElementById('reg_name').value;
     const mobile = document.getElementById('reg_mobile').value;
     const password = document.getElementById('reg_password').value;
+    const institution_name = document.getElementById('reg_institution_name').value;
+    const address = document.getElementById('reg_address').value;
+    const established_year = document.getElementById('reg_established_year').value;
 
+    setButtonLoading('btn-reg-otp', true);
     try {
         const res = await fetch('/api/auth/send-otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, mobile, password })
+            body: JSON.stringify({ name, mobile, password, institution_name, address, established_year })
         });
         const data = await res.json();
         if (data.success) {
@@ -81,12 +87,14 @@ async function handleRegisterOtp() {
             document.getElementById('reg-step2').classList.remove('hidden');
         } else showToast(data.error || 'Failed to send OTP', 'error');
     } catch (err) { showToast('Server error', 'error'); }
+    setButtonLoading('btn-reg-otp', false, 'Send OTP');
 }
 
 async function verifyRegisterOtp() {
     const mobile = document.getElementById('reg_mobile').value;
     const otp = document.getElementById('reg_otp').value;
 
+    setButtonLoading('btn-reg-verify', true);
     try {
         const res = await fetch('/api/auth/verify-register', {
             method: 'POST',
@@ -101,12 +109,15 @@ async function verifyRegisterOtp() {
             window.location.href = 'dashboard.html';
         } else showToast(data.error || 'Invalid OTP', 'error');
     } catch (err) { showToast('Server error', 'error'); }
+    setButtonLoading('btn-reg-verify', false, 'Verify & Register');
 }
 
 // --- Login (Password) ---
 async function handleLogin() {
     const identifier = document.getElementById('login_identifier').value;
     const password = document.getElementById('login_password').value;
+    
+    setButtonLoading('btn-login-submit', true);
     try {
         const res = await fetch('/api/auth/login', {
             method: 'POST',
@@ -118,15 +129,17 @@ async function handleLogin() {
             localStorage.setItem('usame_token', data.data.token);
             localStorage.setItem('usame_reg_id', data.data.registrationId);
             showToast('Login Successful!');
-            const decoded = parseJwt(data.data.token);
-            setTimeout(() => { window.location.href = decoded.role === 'ADMIN' ? 'admin.html' : 'dashboard.html'; }, 1000);
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
         } else showToast(data.error || 'Login failed', 'error');
     } catch (err) { showToast('Server error during login', 'error'); }
+    setButtonLoading('btn-login-submit', false, 'Login Securely');
 }
 
 // --- Login (OTP) ---
 async function handleLoginSendOtp() {
     const mobile = document.getElementById('login_mobile').value;
+    
+    setButtonLoading('btn-login-send-otp', true);
     try {
         const res = await fetch('/api/auth/login-send-otp', {
             method: 'POST',
@@ -140,11 +153,14 @@ async function handleLoginSendOtp() {
             document.getElementById('login-otp-step2').classList.remove('hidden');
         } else showToast(data.error || 'Failed to send OTP', 'error');
     } catch (err) { showToast('Server error', 'error'); }
+    setButtonLoading('btn-login-send-otp', false, 'Send OTP');
 }
 
 async function handleLoginVerifyOtp() {
     const mobile = document.getElementById('login_mobile').value;
     const otp = document.getElementById('login_otp').value;
+    
+    setButtonLoading('btn-login-verify-otp', true);
     try {
         const res = await fetch('/api/auth/login-verify-otp', {
             method: 'POST',
@@ -156,10 +172,10 @@ async function handleLoginVerifyOtp() {
             localStorage.setItem('usame_token', data.data.token);
             localStorage.setItem('usame_reg_id', data.data.registrationId);
             showToast('Login Successful!');
-            const decoded = parseJwt(data.data.token);
-            setTimeout(() => { window.location.href = decoded.role === 'ADMIN' ? 'admin.html' : 'dashboard.html'; }, 1000);
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
         } else showToast(data.error || 'Invalid OTP', 'error');
     } catch (err) { showToast('Server error', 'error'); }
+    setButtonLoading('btn-login-verify-otp', false, 'Verify & Login');
 }
 
 // --- Forgot Password ---
@@ -238,7 +254,6 @@ async function handleFridVerify() {
 function initAuth() {
     // Tabs
     document.getElementById('tab-login')?.addEventListener('click', () => switchTab('login'));
-    document.getElementById('tab-admin')?.addEventListener('click', () => switchTab('admin'));
     document.getElementById('tab-register')?.addEventListener('click', () => switchTab('register'));
 
     // Login Modes
@@ -260,27 +275,6 @@ function initAuth() {
         e.preventDefault();
         const mode = document.querySelector('input[name="login_mode"]:checked').value;
         if (mode === 'password') handleLogin();
-    });
-
-    // Admin Form
-    document.getElementById('form-admin')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const identifier = document.getElementById('admin_mobile').value;
-        const password = document.getElementById('admin_password').value;
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier, password })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('usame_token', data.data.token);
-                localStorage.setItem('usame_reg_id', data.data.registrationId);
-                showToast('Admin Login Successful!');
-                setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
-            } else showToast(data.error || 'Login failed', 'error');
-        } catch (err) { showToast('Server error during login', 'error'); }
     });
 
     // Login Form (OTP)

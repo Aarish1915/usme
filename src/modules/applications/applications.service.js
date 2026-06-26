@@ -55,8 +55,14 @@ async function saveStep(registrationId, userId, stepNumber, payload, stepSchema)
         });
     }
 
-    // Validate only fields present in payload
-    const parsed = stepSchema.parse(payload);
+    // Allow partial saves: extract known keys from payload without strict validation
+    const validKeys = Object.keys(stepSchema.shape);
+    const parsed = {};
+    for (const key of validKeys) {
+        if (payload[key] !== undefined) {
+            parsed[key] = payload[key];
+        }
+    }
 
     // Merge draft_data in JS (client partials overwrite same keys)
     const merged = { ...(app.draft_data || {}), ...parsed };

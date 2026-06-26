@@ -15,14 +15,16 @@ function generateOtp() {
 // REGISTRATION
 // ==========================================
 async function sendOtp(req, res) {
-    const { name, mobile, password } = req.body;
-    if (!mobile || !password || !name) return res.status(400).json({ error: 'Name, mobile and password required' });
+    const { name, mobile, password, institution_name, address, established_year } = req.body;
+    if (!mobile || !password || !name || !institution_name || !address || !established_year) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
     const existingUser = await prisma.users.findUnique({ where: { mobile } });
     if (existingUser) return res.status(409).json({ error: 'User with this mobile already exists' });
 
     const otp = generateOtp();
-    otpStore.set(mobile, { otp, name, password, type: 'register' });
+    otpStore.set(mobile, { otp, name, password, institution_name, address, established_year, type: 'register' });
     
     console.log(`\n=========================================\n[DEV] REGISTRATION OTP for ${mobile}: ${otp}\n=========================================\n`);
     await sendSms(mobile, `Welcome to USAME! Your registration OTP is: ${otp}`);
@@ -39,12 +41,29 @@ async function verifyOtpAndRegister(req, res) {
 
         const hash = await bcrypt.hash(pendingData.password, 12);
         
-        const user = await prisma.users.create({
-            data: { 
-                name: pendingData.name,
-                mobile, 
-                password_hash: hash 
-            }
+        let user;
+        await prisma.$transaction(async (tx) => {
+            user = await tx.users.create({
+                data: { 
+                    name: pendingData.name,
+                    mobile, 
+                    password_hash: hash 
+                }
+            });
+
+            // Automatically create draft application with pre-filled details
+            await tx.applications.create({
+                data: {
+                    user_id: user.id,
+                    status: 'draft',
+                    current_step: 1,
+                    draft_data: {
+                        q1_name: pendingData.institution_name,
+                        q2_address: pendingData.address,
+                        q3_year: pendingData.established_year
+                    }
+                }
+            });
         });
 
         otpStore.delete(mobile);
