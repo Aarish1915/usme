@@ -19,21 +19,26 @@ function setButtonLoading(btnId, isLoading, originalText = '') {
 }
 
 function switchTab(tab) {
-    document.getElementById('tab-login')?.classList.toggle('active', tab === 'login');
-    document.getElementById('tab-admin')?.classList.toggle('active', tab === 'admin');
-    document.getElementById('tab-register')?.classList.toggle('active', tab === 'register');
-
-    document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
-    document.getElementById('form-admin').classList.toggle('hidden', tab !== 'admin');
-    document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-admin').classList.add('hidden');
+    document.getElementById('form-register').classList.add('hidden');
     document.getElementById('form-forgot-password').classList.add('hidden');
     document.getElementById('form-forgot-reg-id').classList.add('hidden');
 
     if (tab === 'login') {
-        document.querySelector('input[name="login_mode"][value="password"]').checked = true;
-        toggleLoginMode('password');
+        document.getElementById('form-login').classList.remove('hidden');
+        const pwdMode = document.querySelector('input[name="login_mode"][value="password"]');
+        if (pwdMode) {
+            pwdMode.checked = true;
+            toggleLoginMode('password');
+        }
+    } else if (tab === 'admin') {
+        document.getElementById('form-admin').classList.remove('hidden');
+    } else if (tab === 'register') {
+        document.getElementById('form-register').classList.remove('hidden');
     }
 }
+
 
 function toggleLoginMode(mode) {
     document.getElementById('login-password-mode').classList.toggle('hidden', mode !== 'password');
@@ -303,3 +308,4 @@ function initAuth() {
 }
 
 initAuth();
+switchTab('register');
