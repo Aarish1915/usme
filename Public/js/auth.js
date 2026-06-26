@@ -36,6 +36,7 @@ function switchTab(tab) {
         document.getElementById('form-admin').classList.remove('hidden');
     } else if (tab === 'register') {
         document.getElementById('form-register').classList.remove('hidden');
+        resetReg();
     }
 }
 
@@ -65,8 +66,25 @@ function showForgotRegId() {
 }
 
 function resetReg() {
-    document.getElementById('reg-step1').classList.remove('hidden');
+    document.getElementById('reg-part1').classList.remove('hidden');
+    document.getElementById('reg-part2').classList.add('hidden');
     document.getElementById('reg-step2').classList.add('hidden');
+}
+
+function regNext() {
+    const inst = document.getElementById('reg_institution_name');
+    const addr = document.getElementById('reg_address');
+    const year = document.getElementById('reg_established_year');
+    
+    if (inst.reportValidity() && addr.reportValidity() && year.reportValidity()) {
+        document.getElementById('reg-part1').classList.add('hidden');
+        document.getElementById('reg-part2').classList.remove('hidden');
+    }
+}
+
+function regBack1() {
+    document.getElementById('reg-part1').classList.remove('hidden');
+    document.getElementById('reg-part2').classList.add('hidden');
 }
 
 // --- Registration ---
@@ -88,7 +106,8 @@ async function handleRegisterOtp() {
         const data = await res.json();
         if (data.success) {
             showToast('OTP Sent!');
-            document.getElementById('reg-step1').classList.add('hidden');
+            document.getElementById('reg-part1').classList.add('hidden');
+            document.getElementById('reg-part2').classList.add('hidden');
             document.getElementById('reg-step2').classList.remove('hidden');
         } else showToast(data.error || 'Failed to send OTP', 'error');
     } catch (err) { showToast('Server error', 'error'); }
@@ -271,9 +290,15 @@ function initAuth() {
     document.getElementById('btn-forgot-reg-id')?.addEventListener('click', showForgotRegId);
 
     // Registration Form
+    document.getElementById('btn-reg-next')?.addEventListener('click', regNext);
+    document.getElementById('btn-reg-back-1')?.addEventListener('click', regBack1);
+    
     document.getElementById('form-register')?.addEventListener('submit', (e) => { e.preventDefault(); handleRegisterOtp(); });
     document.getElementById('btn-reg-verify')?.addEventListener('click', verifyRegisterOtp);
-    document.getElementById('btn-reg-back')?.addEventListener('click', resetReg);
+    document.getElementById('btn-reg-back-2')?.addEventListener('click', () => {
+        document.getElementById('reg-part2').classList.remove('hidden');
+        document.getElementById('reg-step2').classList.add('hidden');
+    });
 
     // Login Form (Password)
     document.getElementById('form-login')?.addEventListener('submit', (e) => {
