@@ -11,8 +11,37 @@ const reviewRouter = require('./modules/review/review.routes');
 
 const app = express();
 
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"], // Required for existing UI styles
+            imgSrc: ["'self'", "data:", "blob:"],
+            fontSrc: ["'self'"],
+            connectSrc: ["'self'"]
+        }
+    }
+}));
+
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // Allow localhost and any render.com subdomains
+        if (!origin || allowedOrigins.includes(origin) || origin.includes('onrender.com')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
