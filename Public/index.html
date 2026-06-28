@@ -3,194 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USAME Portal | Official</title>
+    <title>USAME Portal | Uttarakhand State Authority for Minority Education</title>
+    <meta name="description" content="Official portal for minority educational institution registration and recognition in Uttarakhand.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <main class="split-layout">
         <!-- LEFT PANEL: Branding -->
-        <div class="split-left">
-            <div class="brand-content">
+        <div class="split-left" id="left-panel">
+            <div class="brand-content" id="left-content-default">
                 <div class="brand-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M3 10h18"></path><path d="M5 6l7-3 7 3"></path><path d="M4 10v11"></path><path d="M20 10v11"></path><path d="M8 14v3"></path><path d="M12 14v3"></path><path d="M16 14v3"></path></svg>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 14v3"/><path d="M12 14v3"/><path d="M16 14v3"/></svg>
                 </div>
-                <h1>Government of<br>Uttarakhand</h1>
-                <h2>State Minority Education<br>Authority</h2>
+                <p class="govt-label">Government of Uttarakhand</p>
+                <h1>State Minority<br>Education Authority</h1>
                 <div class="divider"></div>
-                <p>Empowering communities through accessible,<br>quality education and institutional support<br>across the state.</p>
+                <p>Facilitating equitable access and institutional excellence for minority educational institutions.</p>
+                <div class="brand-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Official State Government Portal
+                </div>
+            </div>
+            <!-- Admin Left Panel (hidden by default) -->
+            <div class="brand-content hidden" id="left-content-admin">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 14v3"/><path d="M12 14v3"/><path d="M16 14v3"/></svg>
+                </div>
+                <p class="govt-label">Government of Uttarakhand</p>
+                <h1>USAME Portal</h1>
+                <p>Minority Education Authority<br>Government Gateway</p>
+                <div class="auth-warning-card">
+                    <h4>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Authorized Personnel Only
+                    </h4>
+                    <p>Access to this system is restricted to verified administrators and nodal officers.</p>
+                </div>
             </div>
         </div>
 
         <!-- RIGHT PANEL: Forms -->
         <div class="split-right">
-            
-            <!-- REGISTER FORM (DEFAULT) -->
+
+            <!-- ===== REGISTER FORM (DEFAULT) ===== -->
             <form id="form-register" class="auth-card">
                 <div id="reg-header">
-                    <h2 id="reg-title">Institution Registration</h2>
-                    <p id="reg-subtitle" class="subtitle">Please provide your institutional details to begin the enrollment process.</p>
+                    <div id="reg-step-badge-container" style="display: flex; align-items: center;">
+                        <span class="step-badge-green" id="reg-step-num">1</span>
+                        <h2 id="reg-title">Institution Registration</h2>
+                    </div>
+                    <p id="reg-subtitle" class="subtitle">Please provide the primary details of the educational institution.</p>
                 </div>
-                
-                <!-- Registration Part 1 -->
+                <hr class="card-divider">
+
+                <!-- Registration Part 1: Institution Details -->
                 <div id="reg-part1">
                     <div class="form-group">
-                        <label>Institution Name</label>
-                        <input type="text" id="reg_institution_name" required placeholder="e.g. Alpine Minority School">
+                        <label>Institution Name <span class="required">*</span></label>
+                        <span class="label-hindi">संस्था का नाम</span>
+                        <input type="text" id="reg_institution_name" required placeholder="e.g. Modern Heritage Academy">
                     </div>
                     <div class="form-group">
-                        <label>Full Correspondence Address</label>
-                        <input type="text" id="reg_address" required placeholder="e.g. Village Road, Laksar...">
+                        <label>Full Correspondence Address <span class="required">*</span></label>
+                        <span class="label-hindi">पूर्ण पत्राचार का पता</span>
+                        <textarea id="reg_address" required placeholder="Street, City, District, PIN Code"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Year of Establishment</label>
+                        <label>Year of Establishment <span class="required">*</span></label>
+                        <span class="label-hindi">स्थापना का वर्ष</span>
                         <input type="number" id="reg_established_year" required placeholder="YYYY" min="1800" max="2026">
                     </div>
-                    <button type="button" class="btn btn-primary-saffron" id="btn-reg-next">Continue Registration &rarr;</button>
+                    <button type="button" class="btn btn-saffron btn-block" id="btn-reg-next">Continue Registration &rarr;</button>
                 </div>
 
-                <!-- Registration Part 2 -->
+                <!-- Registration Part 2: Applicant Details -->
                 <div id="reg-part2" class="hidden">
                     <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="reg_name" required placeholder="Manager / Applicant Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Mobile Number</label>
-                        <div class="input-with-prefix">
-                            <span class="prefix">+91</span>
-                            <input type="text" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" id="reg_mobile" required placeholder="10-digit mobile number">
+                        <label>Full Name <span class="required">*</span></label>
+                        <span class="label-hindi">पूरा नाम</span>
+                        <div class="input-with-icon">
+                            <span class="icon">&#128100;</span>
+                            <input type="text" id="reg_name" required placeholder="e.g. Rahul Sharma">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Create Password</label>
-                        <input type="password" id="reg_password" required placeholder="Create a strong password">
+                        <label>Mobile Number <span class="required">*</span></label>
+                        <span class="label-hindi">मोबाइल नंबर</span>
+                        <div class="input-with-prefix">
+                            <span class="prefix">+91</span>
+                            <input type="text" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" id="reg_mobile" required placeholder="10-digit number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Create Password <span class="required">*</span></label>
+                        <span class="label-hindi">पासवर्ड बनाएं</span>
+                        <div class="input-with-icon">
+                            <span class="icon">&#128274;</span>
+                            <input type="password" id="reg_password" required placeholder="Create a strong password">
+                            <button type="button" class="icon-right" id="btn-toggle-reg-pwd" aria-label="Toggle password visibility">&#128065;</button>
+                        </div>
                         <small class="help-text">Must be at least 6 characters.</small>
                     </div>
                     <div class="form-group checkbox-group">
-                        <label><input type="checkbox" required> I agree to the Terms of Use and Privacy Policy</label>
+                        <label><input type="checkbox" required> I agree to the <button type="button" class="link-text" style="font-size: 0.85rem;">Terms of Service</button> and <button type="button" class="link-text" style="font-size: 0.85rem;">Privacy Policy</button>.</label>
                     </div>
-                    <button type="submit" class="btn btn-primary-navy" id="btn-reg-otp">Create Account</button>
-                    <button type="button" class="btn btn-secondary mt-10" id="btn-reg-back-1">Back</button>
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-outline" id="btn-reg-back-1">Back</button>
+                        <button type="submit" class="btn btn-primary" id="btn-reg-otp">Create Account</button>
+                    </div>
                 </div>
 
-                <!-- Registration Part 3 (OTP) -->
+                <!-- Registration Part 3: OTP Verification -->
                 <div id="reg-step2" class="hidden">
                     <div class="form-group">
                         <label>Enter 4-Digit OTP</label>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Check your terminal for the mock OTP</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Check your mobile for the OTP</p>
                         <input type="number" id="reg_otp" placeholder="XXXX">
                     </div>
-                    <button type="button" class="btn btn-primary-navy" id="btn-reg-verify">Verify & Register</button>
-                    <button type="button" class="btn btn-secondary mt-10" id="btn-reg-back-2">Back</button>
+                    <button type="button" class="btn btn-primary btn-block" id="btn-reg-verify">Verify &amp; Register</button>
+                    <button type="button" class="btn btn-outline btn-block mt-12" id="btn-reg-back-2">Back</button>
                 </div>
 
                 <div class="auth-footer text-center">
-                    Already registered? <button type="button" class="link-text bold" onclick="switchTab('login')">Sign in here</button>
+                    Already registered? <button type="button" class="link-text" id="btn-switch-to-login-1">Sign in here</button>
+                    <span class="link-separator">·</span>
+                    <button type="button" class="link-text-muted" id="btn-switch-to-admin-1">Admin Login</button>
+                </div>
+
+                <!-- Step Progress (bottom) -->
+                <div class="step-progress" id="reg-step-progress">
+                    <span class="step-progress-item active" id="sp-1">Step 1</span>
+                    <span class="step-progress-line" id="sp-line-1"></span>
+                    <span class="step-progress-item" id="sp-2">Step 2</span>
+                    <span class="step-progress-line" id="sp-line-2"></span>
+                    <span class="step-progress-item" id="sp-3">Step 3</span>
                 </div>
             </form>
 
-            <!-- LOGIN FORM -->
+            <!-- ===== LOGIN FORM ===== -->
             <form id="form-login" class="auth-card hidden">
                 <div class="card-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M3 10h18"></path><path d="M5 6l7-3 7 3"></path><path d="M4 10v11"></path><path d="M20 10v11"></path><path d="M8 14v3"></path><path d="M12 14v3"></path><path d="M16 14v3"></path></svg>
+                    <div class="icon-circle">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 14v3"/><path d="M12 14v3"/><path d="M16 14v3"/></svg>
+                    </div>
                 </div>
                 <h2 class="text-center">Sign In</h2>
                 <p class="subtitle text-center">Secure access to USAME Gateway</p>
 
-                <div class="login-options">
-                    <label><input type="radio" name="login_mode" value="password" checked> Password</label>
-                    <label><input type="radio" name="login_mode" value="otp"> OTP</label>
+                <!-- Pill Toggle -->
+                <div class="pill-toggle">
+                    <input type="radio" name="login_mode" value="password" id="mode-password" checked>
+                    <label for="mode-password">Password</label>
+                    <input type="radio" name="login_mode" value="otp" id="mode-otp">
+                    <label for="mode-otp">OTP</label>
                 </div>
 
+                <!-- Password Mode -->
                 <div id="login-password-mode">
                     <div class="form-group">
-                        <label>Username / Mobile</label>
+                        <label>Username/Mobile</label>
+                        <span class="label-hindi">उपयोगकर्ता नाम/मोबाइल</span>
                         <div class="input-with-icon">
-                            <i>👤</i>
-                            <input type="text" id="login_identifier" placeholder="Enter your credential">
+                            <span class="icon">&#128100;</span>
+                            <input type="text" id="login_identifier" placeholder="Enter username or mobile">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="label-row">
-                            <label>Password</label>
-                            <button type="button" class="link-text-small" id="btn-forgot-password">Forgot Password?</button>
+                            <div>
+                                <label>Password</label>
+                                <span class="label-hindi">पासवर्ड</span>
+                            </div>
+                            <button type="button" class="link-text-muted" id="btn-forgot-password">Forgot Password?</button>
                         </div>
                         <div class="input-with-icon">
-                            <i>🔒</i>
-                            <input type="password" id="login_password" placeholder="Enter your password">
+                            <span class="icon">&#128274;</span>
+                            <input type="password" id="login_password" placeholder="Enter password">
+                            <button type="button" class="icon-right" id="btn-toggle-login-pwd" aria-label="Toggle password visibility">&#128065;</button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary-navy" id="btn-login-submit">Sign In &rarr;</button>
-                    
-                    <div class="text-center mt-10">
-                        <button type="button" class="link-text-small" id="btn-forgot-reg-id">Forgot Registration ID?</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="btn-login-submit">Sign In &rarr;</button>
+                    <div class="text-center mt-16">
+                        <button type="button" class="link-text" id="btn-forgot-reg-id">Forgot Registration ID?</button>
                     </div>
                 </div>
 
+                <!-- OTP Mode -->
                 <div id="login-otp-mode" class="hidden">
                     <div id="login-otp-step1">
                         <div class="form-group">
                             <label>Mobile Number</label>
+                            <span class="label-hindi">मोबाइल नंबर</span>
                             <div class="input-with-icon">
-                                <i>📱</i>
+                                <span class="icon">&#128241;</span>
                                 <input type="text" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" id="login_mobile" placeholder="10-digit Mobile Number">
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary-navy" id="btn-login-send-otp">Send OTP &rarr;</button>
+                        <button type="button" class="btn btn-primary btn-block" id="btn-login-send-otp">Send OTP &rarr;</button>
                     </div>
                     <div id="login-otp-step2" class="hidden">
                         <div class="form-group">
                             <label>Enter 4-Digit OTP</label>
                             <input type="number" id="login_otp" placeholder="XXXX">
                         </div>
-                        <button type="button" class="btn btn-primary-navy" id="btn-login-verify-otp">Verify & Sign In</button>
-                        <button type="button" class="btn btn-secondary mt-10" id="btn-login-back">Back</button>
+                        <button type="button" class="btn btn-primary btn-block" id="btn-login-verify-otp">Verify &amp; Sign In</button>
+                        <button type="button" class="btn btn-outline btn-block mt-12" id="btn-login-back">Back</button>
                     </div>
                 </div>
 
                 <div class="auth-footer text-center">
-                    Don't have an account? <button type="button" class="link-text bold" onclick="switchTab('register')">Register</button>
+                    Don't have an account? <button type="button" class="link-text" id="btn-switch-to-register">Register</button>
+                    <span class="link-separator">·</span>
+                    <button type="button" class="link-text-muted" id="btn-switch-to-admin-2">Admin Login</button>
                 </div>
             </form>
 
-            <!-- ADMIN LOGIN FORM -->
+            <!-- ===== ADMIN LOGIN FORM ===== -->
             <form id="form-admin" class="auth-card hidden">
                 <div class="card-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <div class="icon-circle">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
                 </div>
                 <h2 class="text-center">Admin Sign In</h2>
                 <p class="subtitle text-center">Secure access to USAME Admin Gateway</p>
+
                 <div class="form-group">
                     <label>Admin Mobile Number</label>
                     <div class="input-with-icon">
-                        <i>👤</i>
-                        <input type="text" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" id="admin_mobile" placeholder="Registered Admin Mobile">
+                        <span class="icon">&#128100;</span>
+                        <input type="text" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" id="admin_mobile" placeholder="Enter your registered mobile number">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <div class="label-row">
+                        <label>Password</label>
+                        <button type="button" class="link-saffron link-text-muted" style="color: var(--primary-saffron);">Forgot Password?</button>
+                    </div>
                     <div class="input-with-icon">
-                        <i>🔒</i>
-                        <input type="password" id="admin_password" placeholder="Enter Password">
+                        <span class="icon">&#128274;</span>
+                        <input type="password" id="admin_password" placeholder="Enter your password">
+                        <button type="button" class="icon-right" id="btn-toggle-admin-pwd" aria-label="Toggle password visibility">&#128065;</button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary-navy" id="btn-admin-submit">Sign In &rarr;</button>
+
+                <div class="session-notice">
+                    <span>&#9432;</span>
+                    Your login session is monitored and recorded for security purposes.
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="btn-admin-submit">Sign In &rarr;</button>
 
                 <div class="auth-footer text-center">
-                    <button type="button" class="link-text" onclick="switchTab('login')">Return to Applicant Login</button>
+                    <button type="button" class="link-text" id="btn-switch-to-login-2">&larr; Return to Applicant Login</button>
                 </div>
             </form>
 
-            <!-- FORGOT PASSWORD FORM -->
+            <!-- ===== FORGOT PASSWORD FORM ===== -->
             <form id="form-forgot-password" class="auth-card hidden">
                 <h2 class="text-center">Reset Password</h2>
+                <p class="subtitle text-center">Enter your registered mobile to receive a reset OTP.</p>
                 <div id="fp-step1">
                     <div class="form-group">
                         <label>Registered Mobile Number</label>
                         <input type="text" id="fp_mobile" placeholder="Enter Mobile Number">
                     </div>
-                    <button type="button" class="btn btn-primary-navy" id="btn-fp-send">Send Reset OTP</button>
-                    <button type="button" class="btn btn-secondary mt-10" onclick="switchTab('login')">Back to Login</button>
+                    <button type="button" class="btn btn-primary btn-block" id="btn-fp-send">Send Reset OTP</button>
+                    <button type="button" class="btn btn-outline btn-block mt-12" id="btn-switch-to-login-3">Back to Login</button>
                 </div>
                 <div id="fp-step2" class="hidden">
                     <div class="form-group">
@@ -199,46 +278,52 @@
                     </div>
                     <div class="form-group">
                         <label>New Password</label>
-                        <input type="password" id="fp_new_password" placeholder="Min 6 characters">
+                        <input type="password" id="fp_new_password" placeholder="Enter New Password">
                     </div>
-                    <button type="button" class="btn btn-primary-navy" id="btn-fp-verify">Reset Password</button>
-                    <button type="button" class="btn btn-secondary mt-10" id="btn-fp-back">Back</button>
+                    <button type="button" class="btn btn-primary btn-block" id="btn-fp-verify">Reset Password</button>
+                    <button type="button" class="btn btn-outline btn-block mt-12" id="btn-fp-back">Back</button>
                 </div>
             </form>
 
-            <!-- FORGOT REGISTRATION ID FORM -->
+            <!-- ===== FORGOT REG ID FORM ===== -->
             <form id="form-forgot-reg-id" class="auth-card hidden">
                 <h2 class="text-center">Recover Registration ID</h2>
+                <p class="subtitle text-center">We will send your Registration ID to your mobile via SMS.</p>
                 <div id="frid-step1">
                     <div class="form-group">
                         <label>Registered Mobile Number</label>
                         <input type="text" id="frid_mobile" placeholder="Enter Mobile Number">
                     </div>
-                    <button type="button" class="btn btn-primary-navy" id="btn-frid-send">Send Recovery OTP</button>
-                    <button type="button" class="btn btn-secondary mt-10" onclick="switchTab('login')">Back to Login</button>
+                    <button type="button" class="btn btn-primary btn-block" id="btn-frid-send">Send Recovery OTP</button>
+                    <button type="button" class="btn btn-outline btn-block mt-12" id="btn-switch-to-login-4">Back to Login</button>
                 </div>
                 <div id="frid-step2" class="hidden">
                     <div class="form-group">
                         <label>Enter 4-Digit OTP</label>
                         <input type="number" id="frid_otp" placeholder="XXXX">
                     </div>
-                    <button type="button" class="btn btn-primary-navy" id="btn-frid-verify">Recover ID</button>
-                    <button type="button" class="btn btn-secondary mt-10" id="btn-frid-back">Back</button>
+                    <button type="button" class="btn btn-primary btn-block" id="btn-frid-verify">Recover ID</button>
+                    <button type="button" class="btn btn-outline btn-block mt-12" id="btn-frid-back">Back</button>
                 </div>
-                <div id="frid-result" class="hidden text-center">
-                    <p>Your Registration ID is:</p>
-                    <h3 id="frid_display" style="margin: 15px 0; color: var(--primary-navy); font-size: 1.5rem;">USAME-XXXXX</h3>
-                    <button type="button" class="btn btn-primary-navy" onclick="switchTab('login')">Go to Login</button>
+                <div id="frid-step3" class="hidden text-center">
+                    <p class="subtitle mb-16">Your Registration ID has been sent to your mobile via SMS.</p>
+                    <button type="button" class="btn btn-primary btn-block" id="btn-switch-to-login-5">Go to Login</button>
                 </div>
             </form>
-            
-            <!-- Global Footer for Right Panel -->
-            <div class="auth-footer-bottom" style="position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; background: transparent; padding: 0;">
-                <p class="secured-badge" style="justify-content: center;"><i>🛡️</i> Secured Government Portal</p>
-                <button type="button" class="link-text-small mt-10" onclick="switchTab('admin')">Admin Access</button>
-            </div>
+
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <span>&copy; 2024 Minority Education Authority. All rights reserved.</span>
+        <div>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Accessibility</a>
+            <a href="#">Nodal Officers</a>
+        </div>
+    </footer>
 
     <div id="toast" class="toast">Message here</div>
     <script src="js/auth.js"></script>

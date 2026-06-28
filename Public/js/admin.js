@@ -16,13 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('usame_token');
     
     // Core Elements
-    const tableBody = document.getElementById('appTableBody');
+    const tableBody = document.getElementById('applicationsTableBody');
     const modal = document.getElementById('reviewModal');
     const modalBody = document.getElementById('modalBody');
-    const decisionButtonsContainer = document.getElementById('decisionButtonsContainer');
-    const decisionRemarks = document.getElementById('decisionRemarks');
-    const pdfFrame = document.getElementById('pdfFrame');
-    const closeBtn = document.querySelector('.close');
+    const pdfViewer = document.getElementById('pdfViewer');
+    const closeBtn = document.getElementById('btn-close-modal');
     
     let currentPdfBlobUrl = null;
 
@@ -68,46 +66,47 @@ document.addEventListener('DOMContentLoaded', () => {
         let countTotal = applications.length;
         let countPending = 0;
         let countApproved = 0;
+        let countOverride = 0;
 
         if (countTotal === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No applications found in the queue.</td></tr>';
-            
-            // Update stats
-            updateStatsDOM(countTotal, countPending, countApproved);
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">No applications found in the queue.</td></tr>';
+            updateStatsDOM(countTotal, countPending, countOverride, countApproved);
             return;
         }
 
         tableBody.innerHTML = applications.map(app => {
-            if (app.status === 'submitted' || app.status === '15_percent_override') countPending++;
+            if (app.status === 'submitted') countPending++;
             if (app.status === 'approved') countApproved++;
+            if (app.status === '15_percent_override') countOverride++;
 
-            let statusClass = '';
-            if(app.status === 'submitted') statusClass = 'status-submitted';
-            else if(app.status === 'approved') statusClass = 'status-approved';
-            else if(app.status === 'rejected') statusClass = 'status-rejected';
-            else if(app.status === '15_percent_override') statusClass = 'status-override';
+            let statusBadge = '';
+            if(app.status === 'submitted') statusBadge = '<span class="badge badge-warning">Under Review</span>';
+            else if(app.status === 'approved') statusBadge = '<span class="badge badge-success">Approved</span>';
+            else if(app.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejected</span>';
+            else if(app.status === '15_percent_override') statusBadge = '<span class="badge badge-info">Override Required</span>';
 
             return `
-                <tr>
-                    <td style="color: var(--primary); font-family: monospace;">${escapeHTML(app.user.registration_id)}</td>
-                    <td style="font-weight: 500;">${escapeHTML(app.institution_name || 'N/A')}</td>
-                    <td style="color: #64748b;">${new Date(app.created_at).toLocaleDateString()}</td>
-                    <td><span class="status-badge ${statusClass}">${escapeHTML(app.status.toUpperCase().replace(/_/g, ' '))}</span></td>
-                    <td>
-                        <button class="action-btn review-trigger" data-app-id="${escapeHTML(app.id)}">
-                            <i class="fa-solid fa-eye"></i> Review
+                <tr style="border-bottom: 1px solid var(--border-light); transition: var(--transition);">
+                    <td style="padding: 16px; color: var(--primary-navy); font-family: monospace; font-weight: 500;">${escapeHTML(app.user.registration_id)}</td>
+                    <td style="padding: 16px; font-weight: 500; color: var(--text-dark);">${escapeHTML(app.institution_name || 'N/A')}</td>
+                    <td style="padding: 16px; color: var(--text-muted);">${new Date(app.created_at).toLocaleDateString()}</td>
+                    <td style="padding: 16px;">${statusBadge}</td>
+                    <td style="padding: 16px; text-align: right;">
+                        <button class="btn btn-outline review-trigger" style="padding: 6px 12px; font-size: 0.85rem;" data-app-id="${escapeHTML(app.id)}">
+                            Review &rarr;
                         </button>
                     </td>
                 </tr>
             `;
         }).join('');
 
-        updateStatsDOM(countTotal, countPending, countApproved);
+        updateStatsDOM(countTotal, countPending, countOverride, countApproved);
     }
 
-    function updateStatsDOM(total, pending, approved) {
+    function updateStatsDOM(total, pending, override, approved) {
         document.getElementById('stat-total').innerText = total;
         document.getElementById('stat-pending').innerText = pending;
+        document.getElementById('stat-override').innerText = override;
         document.getElementById('stat-approved').innerText = approved;
     }
 
@@ -115,13 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. MODAL LOGIC & PDF FETCHING
     // ==========================================
     async function openReviewModal(appId, triggerButton) {
-        // Idempotency: Disable button and show spinner
         const originalBtnHTML = triggerButton.innerHTML;
         triggerButton.disabled = true;
-        triggerButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Loading...`;
+        triggerButton.innerHTML = `<span class="spinner" style="width: 14px; height: 14px; border-width: 2px;"></span> Loading...`;
 
         try {
-            // Fetch Details
             const res = await fetch(`/api/review/applications/${appId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -131,69 +128,73 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!(payload.ok || payload.success)) throw new Error(payload.error || 'Failed to fetch details');
             
             const app = payload.data;
+            document.getElementById('modal-app-id').innerText = app.user.registration_id;
             
-            let statusClass = '';
-            if(app.status === 'submitted') statusClass = 'status-submitted';
-            else if(app.status === 'approved') statusClass = 'status-approved';
-            else if(app.status === 'rejected') statusClass = 'status-rejected';
-            else if(app.status === '15_percent_override') statusClass = 'status-override';
+            let statusBadge = '';
+            if(app.status === 'submitted') statusBadge = '<span class="badge badge-warning">Under Review</span>';
+            else if(app.status === 'approved') statusBadge = '<span class="badge badge-success">Approved</span>';
+            else if(app.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejected</span>';
+            else if(app.status === '15_percent_override') statusBadge = '<span class="badge badge-info">Override Required</span>';
 
             modalBody.innerHTML = `
-                <div class="info-group">
-                    <label>Registration ID</label>
-                    <p style="color: var(--primary); font-family: monospace; font-size: 18px;">${escapeHTML(app.user.registration_id)}</p>
-                </div>
                 <div class="info-group">
                     <label>Institution Name</label>
                     <p>${escapeHTML(app.institution_name || 'N/A')}</p>
                 </div>
                 <div class="info-group">
-                    <label>Current Status</label>
-                    <p><span class="status-badge ${statusClass}">${escapeHTML(app.status.toUpperCase().replace(/_/g, ' '))}</span></p>
-                </div>
-                <hr style="margin: 25px 0; border: none; border-top: 1px dashed #cbd5e1;">
-                <h4 style="margin-bottom: 15px; color: #475569; font-size: 14px; text-transform: uppercase;"><i class="fa-solid fa-list-check"></i> Registered Entities</h4>
-                <div class="info-group" style="margin-bottom: 10px;">
-                    <p style="font-size: 14px;"><i class="fa-solid fa-users-gear" style="color: #64748b; width: 20px;"></i> Management: <strong style="color: #10b981;">${app.management_committee.length}</strong> members</p>
-                </div>
-                <div class="info-group" style="margin-bottom: 10px;">
-                    <p style="font-size: 14px;"><i class="fa-solid fa-chalkboard-user" style="color: #64748b; width: 20px;"></i> Staff: <strong style="color: #10b981;">${app.staff_roster.length}</strong> members</p>
+                    <label>Registration ID</label>
+                    <p style="font-family: monospace; color: var(--primary-navy);">${escapeHTML(app.user.registration_id)}</p>
                 </div>
                 <div class="info-group">
-                    <p style="font-size: 14px;"><i class="fa-solid fa-graduation-cap" style="color: #64748b; width: 20px;"></i> Classes: <strong style="color: #10b981;">${app.student_demographics.length}</strong> registered</p>
+                    <label>Current Status</label>
+                    <p style="margin-top: 4px;">${statusBadge}</p>
                 </div>
                 
-                <hr style="margin: 25px 0; border: none; border-top: 1px dashed #cbd5e1;">
-                <h4 style="margin-bottom: 15px; color: #475569; font-size: 14px; text-transform: uppercase;"><i class="fa-solid fa-paperclip"></i> Uploaded Documents</h4>
-                <div class="documents-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                <hr style="border: none; border-top: 1px dashed var(--border); margin: 24px 0;">
+                
+                <h4 style="font-size: 0.95rem; color: var(--primary-navy); margin-bottom: 16px;">Registered Entities</h4>
+                <div class="info-group" style="margin-bottom: 8px;">
+                    <p style="font-size: 0.95rem;">👥 Management: <strong>${app.management_committee?.length || 0}</strong> members</p>
+                </div>
+                <div class="info-group" style="margin-bottom: 8px;">
+                    <p style="font-size: 0.95rem;">👨‍🏫 Staff: <strong>${app.staff_roster?.length || 0}</strong> members</p>
+                </div>
+                <div class="info-group">
+                    <p style="font-size: 0.95rem;">🎓 Classes: <strong>${app.student_demographics?.length || 0}</strong> registered</p>
+                </div>
+
+                <hr style="border: none; border-top: 1px dashed var(--border); margin: 24px 0;">
+                
+                <h4 style="font-size: 0.95rem; color: var(--primary-navy); margin-bottom: 16px;">Attached Documents</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
                     ${app.documents && app.documents.length > 0 ? 
                         app.documents.map(doc => `
-                            <a href="${escapeHTML(doc.secure_url)}" target="_blank" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #334155; font-size: 13px; transition: all 0.2s;">
-                                <span><i class="fa-solid fa-file-pdf" style="color: #ef4444; margin-right: 8px;"></i> ${escapeHTML(doc.document_type.replace(/_/g, ' '))}</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square" style="color: #94a3b8;"></i>
+                            <a href="${escapeHTML(doc.secure_url)}" target="_blank" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 6px; text-decoration: none; color: var(--text-dark); font-size: 0.85rem; transition: var(--transition);">
+                                <span>📄 ${escapeHTML(doc.document_type.replace(/_/g, ' '))}</span>
+                                <span style="color: var(--text-muted);">&nearr;</span>
                             </a>
                         `).join('')
-                        : '<p style="font-size: 13px; color: #64748b; font-style: italic;">No documents uploaded.</p>'
+                        : '<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No documents attached.</p>'
                     }
+                </div>
+
+                <div class="decision-box">
+                    <h4 style="font-size: 1.1rem; color: var(--text-dark); margin-bottom: 12px;">Admin Decision</h4>
+                    <textarea id="decisionRemarks" rows="4" placeholder="Enter remarks (mandatory for approval/rejection)"></textarea>
+                    <div style="display: flex; gap: 12px; margin-top: 16px;" id="decisionButtonsContainer">
+                        <button class="btn btn-success decision-trigger" style="flex: 1;" data-app-id="${escapeHTML(app.id)}" data-decision="approved">Approve</button>
+                        <button class="btn btn-danger decision-trigger" style="flex: 1;" data-app-id="${escapeHTML(app.id)}" data-decision="rejected">Reject</button>
+                    </div>
                 </div>
             `;
 
-            // Inject Stateless ID into Decision Buttons
-            document.querySelectorAll('.decision-trigger').forEach(btn => {
-                btn.setAttribute('data-app-id', escapeHTML(app.id));
-            });
-
-            // Use direct URL with secure token query parameter instead of Blob
-            // This prevents browsers from blocking Blob URLs or downloading them incorrectly.
-            pdfFrame.src = `/api/review/applications/${appId}/pdf?token=${token}`;
-
+            pdfViewer.src = `/api/review/applications/${appId}/pdf?token=${token}`;
             modal.style.display = 'block';
 
         } catch (error) {
             console.error(error);
             showToast('Error loading application details', 'error');
         } finally {
-            // Restore button state
             triggerButton.disabled = false;
             triggerButton.innerHTML = originalBtnHTML;
         }
@@ -201,10 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeModal() {
         modal.style.display = 'none';
-        decisionRemarks.value = '';
-        pdfFrame.src = '';
-        
-        // Prevent memory leaks
+        pdfViewer.src = '';
         if (currentPdfBlobUrl) {
             URL.revokeObjectURL(currentPdfBlobUrl);
             currentPdfBlobUrl = null;
@@ -215,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. DECISION SUBMISSION
     // ==========================================
     async function handleDecision(appId, status, buttonEl) {
-        const remarks = decisionRemarks.value;
+        const remarks = document.getElementById('decisionRemarks').value;
         if (!remarks.trim()) {
             alert('Remarks are mandatory!');
             return;
@@ -223,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const originalBtnHTML = buttonEl.innerHTML;
         buttonEl.disabled = true;
-        buttonEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+        buttonEl.innerHTML = `<span class="spinner" style="width: 14px; height: 14px; border-width: 2px;"></span>`;
 
         try {
             const res = await fetch(`/api/review/applications/${appId}/decision`, {
@@ -267,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Decision Buttons
-    decisionButtonsContainer.addEventListener('click', (event) => {
+    modalBody.addEventListener('click', (event) => {
         const decisionBtn = event.target.closest('.decision-trigger');
         if (decisionBtn && !decisionBtn.disabled) {
             const appId = decisionBtn.getAttribute('data-app-id');
@@ -283,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Logout
-    const btnLogout = document.getElementById('btnLogout');
+    const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         btnLogout.addEventListener('click', () => {
             localStorage.removeItem('usame_token');
@@ -302,8 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function escapeHTML(str) {
-        if (str === null || str === undefined) return '';
-        // Strict coercion to string before regex replacements (prevents TypeError)
+        if (!str) return '';
         return String(str)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -312,8 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 
-    // ==========================================
-    // INIT
-    // ==========================================
+    // Init
     loadApplications();
 });

@@ -2,257 +2,322 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USAME - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Admin Dashboard - USAME Portal</title>
+    <!-- We are dropping inline styles and moving to the unified style.css -->
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --sidebar-width: 280px;
-            --bg-color: #f3f4f6;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-dark: #1f2937;
-            --text-muted: #6b7280;
+        body { background: #f3f4f6; overflow-x: hidden; }
+        
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--bg-color); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
+        .admin-sidebar {
+            width: 260px;
             background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
             color: white;
-            padding: 30px 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             position: fixed;
             height: 100vh;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            z-index: 10;
         }
-        .sidebar-brand { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 15px; margin-bottom: 40px; letter-spacing: 1px; }
-        .sidebar-brand i { font-size: 28px; color: #a5b4fc; }
-        .nav-item {
-            padding: 15px 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px;
-            color: #c7d2fe; text-decoration: none; font-weight: 500; transition: all 0.3s ease; margin-bottom: 10px; cursor: pointer;
-        }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.15); color: white; transform: translateX(5px); }
-        .nav-item i { font-size: 18px; width: 20px; text-align: center; }
-        .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .btn-logout { width: 100%; padding: 12px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; cursor: pointer; transition: all 0.3s; font-weight: 600; }
-        .btn-logout:hover { background: #ef4444; color: white; }
 
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
+        .admin-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .admin-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .admin-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #c7d2fe;
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .admin-nav a.active, .admin-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .admin-main {
+            margin-left: 260px;
             flex: 1;
-            padding: 40px 50px;
-            background: #f8fafc;
+            padding: 32px 40px;
         }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .header h1 { font-size: 32px; font-weight: 700; color: #1e293b; }
-        .user-profile { display: flex; align-items: center; gap: 15px; background: white; padding: 8px 20px; border-radius: 50px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .user-profile img { width: 40px; height: 40px; border-radius: 50%; }
 
-        /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .admin-header h1 {
+            font-size: 2rem;
+            color: var(--primary-navy);
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
         .stat-card {
-            background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-            border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px); transition: transform 0.3s ease;
-            position: relative; overflow: hidden;
+            background: var(--surface);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-icon { position: absolute; right: -15px; top: -15px; font-size: 100px; opacity: 0.05; color: var(--primary); }
-        .stat-value { font-size: 36px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .stat-label { color: var(--text-muted); font-weight: 500; font-size: 15px; }
 
-        /* Table Area */
-        .table-container {
-            background: white; border-radius: 20px; padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .table-header h2 { font-size: 22px; color: #1e293b; }
-        
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        th { padding: 15px 20px; text-align: left; color: #64748b; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 18px 20px; background: #f8fafc; }
-        tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; font-weight: 600; color: #0f172a; }
-        tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
-        tr { transition: transform 0.2s; }
-        tr:hover td { background: #f1f5f9; transform: scale(1.01); }
 
-        .status-badge { padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-        .status-submitted { background: #e0e7ff; color: #3730a3; }
-        .status-override { background: #fef08a; color: #854d0e; }
-        .status-approved { background: #dcfce7; color: #166534; }
-        .status-rejected { background: #fee2e2; color: #991b1b; }
-        
-        .action-btn { padding: 8px 18px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background 0.3s; }
-        .action-btn:hover { background: var(--primary-dark); }
-
-        /* Modal Redesign */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 1000; }
-        .modal-content { background: white; width: 95%; max-width: 1300px; margin: 30px auto; padding: 0; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25); display: flex; flex-direction: column; height: 90vh; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .modal-header { padding: 20px 30px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { font-size: 22px; color: #0f172a; }
-        .close { cursor: pointer; font-size: 28px; color: #64748b; transition: color 0.2s; }
-        .close:hover { color: #ef4444; }
-        
-        .modal-body-container { display: flex; flex: 1; overflow: hidden; }
-        
-        .modal-info-panel { 
-            flex: 1; padding: 30px; background: white; border-right: 1px solid #e2e8f0; max-width: 400px;
-            display: flex; flex-direction: column;
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-navy);
         }
-        #modalBody { flex: 1; overflow-y: auto; padding-right: 10px; }
-        
-        .modal-pdf-panel { flex: 2; background: #cbd5e1; padding: 0; display: flex; flex-direction: column; }
-        .modal-pdf-panel iframe { flex: 1; width: 100%; border: none; }
-        
-        .info-group { margin-bottom: 25px; }
-        .info-group label { display: block; font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
-        .info-group p { font-size: 16px; color: #0f172a; font-weight: 500; }
-        
-        .decision-box { background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 20px; flex-shrink: 0; }
-        .decision-box h4 { margin-bottom: 15px; color: #0f172a; font-size: 18px; }
-        .decision-box textarea { width: 100%; padding: 15px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: inherit; resize: vertical; margin-bottom: 15px; transition: border-color 0.3s; }
-        .decision-box textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-        
-        .btn-approve { background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s; flex: 1; }
-        .btn-approve:hover { background: #059669; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .btn-reject { background: #ef4444; color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s; flex: 1; }
-        .btn-reject:hover { background: #dc2626; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
 
-        .toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 2000; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { background: #10b981; }
-        .toast.error { background: #ef4444; }
+        .table-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
 
-        /* Responsive Design */
+        .table-card h2 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 95%; max-width: 1300px;
+            margin: 3vh auto;
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            height: 94vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-header {
+            padding: 16px 24px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .modal-details {
+            flex: 1;
+            max-width: 450px;
+            padding: 24px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .modal-preview {
+            flex: 2;
+            background: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-preview iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+
+        .info-group { margin-bottom: 20px; }
+        .info-group label { display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .info-group p { font-size: 1rem; color: var(--text-dark); font-weight: 500; }
+
+        .decision-box {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 24px;
+        }
+
+        .decision-box textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+
         @media (max-width: 992px) {
-            body { flex-direction: column; }
-            .sidebar { position: relative; width: 100%; height: auto; padding: 15px 20px; flex-direction: row; justify-content: space-between; align-items: center; z-index: 100; }
-            .sidebar-brand { margin-bottom: 0; }
-            .nav-item { display: none; }
-            .sidebar-footer { margin-top: 0; padding-top: 0; border: none; }
-            .btn-logout { width: auto; padding: 8px 15px; }
-            .main-content { margin-left: 0; padding: 20px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .table-container { padding: 20px 15px; }
-            .modal-content { height: 90vh; width: 95%; flex-direction: column; overflow-y: auto; }
-            .modal-body-container { flex-direction: column; overflow: visible; }
-            .modal-info-panel { max-width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .modal-pdf-panel { min-height: 500px; }
+            .admin-layout { flex-direction: column; }
+            .admin-sidebar { position: relative; width: 100%; height: auto; flex-direction: column; padding: 16px; gap: 16px; }
+            .admin-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; width: 100%; gap: 12px; }
+            .admin-nav a { padding: 8px 12px; }
+            .admin-brand { margin-bottom: 0; align-self: center; }
+            #btn-logout { width: auto; align-self: center; }
+            .admin-main { margin-left: 0; padding: 16px; }
+            .modal-body { flex-direction: column; }
+            .modal-details { max-width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fa-solid fa-shield-halved"></i> USAME
-        </div>
-        <div class="nav-item active">
-            <i class="fa-solid fa-inbox"></i> Applications
-        </div>
-        <div class="sidebar-footer">
-            <button id="btnLogout" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
-        </div>
-    </div>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                USAME Admin
+            </div>
+            <ul class="admin-nav" style="flex: 1;">
+                <li><a href="#" class="active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Dashboard</a></li>
+                <li><a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Applications</a></li>
+                <li><a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Security Logs</a></li>
+            </ul>
+            <button class="btn btn-outline" id="btn-logout" style="border-color: rgba(255,255,255,0.3); color: white; width: 100%;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Sign Out
+            </button>
+        </aside>
 
-    <div class="main-content">
-        <div class="header">
-            <div>
-                <h1>Admin Command Center</h1>
-                <p style="color: var(--text-muted); margin-top: 5px;">Manage and review institution applications</p>
-            </div>
-            <div class="user-profile">
-                <span id="adminName" style="font-weight: 600; color: #333;">Admin User</span>
-                <img src="https://ui-avatars.com/api/?name=Admin+User&background=4f46e5&color=fff" alt="Admin">
-            </div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <i class="fa-solid fa-file-lines stat-icon"></i>
-                <div class="stat-value" id="stat-total">-</div>
-                <div class="stat-label">Total Applications</div>
-            </div>
-            <div class="stat-card">
-                <i class="fa-solid fa-clock stat-icon" style="color: #eab308;"></i>
-                <div class="stat-value" id="stat-pending" style="color: #eab308;">-</div>
-                <div class="stat-label">Pending Review</div>
-            </div>
-            <div class="stat-card">
-                <i class="fa-solid fa-check-circle stat-icon" style="color: #10b981;"></i>
-                <div class="stat-value" id="stat-approved" style="color: #10b981;">-</div>
-                <div class="stat-label">Approved</div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <div class="table-header">
-                <h2>Application Queue</h2>
-                <div style="position: relative;">
-                    <i class="fa-solid fa-search" style="position: absolute; left: 15px; top: 12px; color: #94a3b8;"></i>
-                    <input type="text" placeholder="Search ID or Name..." style="padding: 10px 15px 10px 40px; border: 1px solid #e2e8f0; border-radius: 50px; outline: none; width: 250px;">
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Admin Dashboard</h1>
+                <div style="display: flex; align-items: center; gap: 12px; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: var(--shadow-sm);">
+                    <div style="width: 32px; height: 32px; background: var(--primary-saffron); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">A</div>
+                    <span style="font-weight: 500; font-size: 0.95rem;">System Administrator</span>
                 </div>
             </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Reg. ID</th>
-                            <th>Institution Name</th>
-                            <th>Date Submitted</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="appTableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">Loading queue...</td></tr>
-                    </tbody>
-                </table>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Received</h3>
+                    <div class="value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Review</h3>
+                    <div class="value" id="stat-pending">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Requires Admin Override</h3>
+                    <div class="value" style="color: var(--warning);" id="stat-override">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Approved</h3>
+                    <div class="value" style="color: var(--success);" id="stat-approved">0</div>
+                </div>
             </div>
-        </div>
+
+            <!-- Applications Table -->
+            <div class="table-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Recent Applications</h2>
+                    <input type="text" placeholder="Search by App ID or Name..." style="padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); font-size: 0.9rem; width: 250px;">
+                </div>
+                <div class="table-container table-responsive">
+                    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                                <th style="padding: 12px 16px;">App ID</th>
+                                <th style="padding: 12px 16px;">Institution Name</th>
+                                <th style="padding: 12px 16px;">Submitted On</th>
+                                <th style="padding: 12px 16px;">Status</th>
+                                <th style="padding: 12px 16px; text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody">
+                            <tr><td colspan="5" style="padding: 24px; text-align: center; color: var(--text-muted);">Loading applications...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Review Modal -->
+    <!-- Review Modal (Split Screen) -->
     <div id="reviewModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-file-contract" style="color: var(--primary); margin-right: 10px;"></i> Application Review</h3>
-                <span class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary-navy);">Review Application: <span id="modal-app-id"></span></h3>
+                <button type="button" class="btn-close" id="btn-close-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
             </div>
-            <div class="modal-body-container">
-                <div class="modal-info-panel">
-                    <div id="modalBody">
-                        <!-- Details injected here -->
-                    </div>
-                    <div class="decision-box">
-                        <h4><i class="fa-solid fa-gavel" style="color: #64748b; margin-right: 8px;"></i> Record Decision</h4>
-                        <textarea id="decisionRemarks" rows="4" placeholder="Enter mandatory remarks for the applicant here... This will be sent via SMS!"></textarea>
-                        <div style="display: flex; gap: 15px;" id="decisionButtonsContainer">
-                            <button class="btn-approve decision-trigger" data-decision="approved"><i class="fa-solid fa-check"></i> Approve</button>
-                            <button class="btn-reject decision-trigger" data-decision="rejected"><i class="fa-solid fa-xmark"></i> Reject</button>
-                        </div>
+            
+            <div class="modal-body">
+                <!-- Left Panel: Data & Decision -->
+                <div class="modal-details" id="modalBody">
+                    <!-- Dynamic details injected here -->
+                    <div class="info-group">
+                        <label>Institution Name</label>
+                        <p>Loading...</p>
                     </div>
                 </div>
-                <div class="modal-pdf-panel">
-                    <iframe id="pdfFrame" title="Application PDF"></iframe>
+                
+                <!-- Right Panel: PDF Viewer -->
+                <div class="modal-preview">
+                    <iframe id="pdfViewer"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast">Message here</div>
 
     <script src="js/admin.js"></script>
 </body>

@@ -1,6 +1,10 @@
 const token = localStorage.getItem('usame_token');
 const regId = localStorage.getItem('usame_reg_id');
 
+const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') 
+    ? 'http://localhost:3001' 
+    : '';
+
 if (!token || !regId) {
     window.location.href = 'index.html';
 }
@@ -13,8 +17,8 @@ function showToast(message, type = 'success') {
 }
 
 const staticFields = [
-    'q1_name', 'q2_address', 'q3_year', 'q4_rec_details', 'q5_rec_no_date', 'q6_renewal',
-    'q7_society', 'q8_gst', 'q10_land', 'q11_bank', 'q12_manager', 'q13_status', 'q18_fee', 'q20_other'
+    'q4_rec_details', 'q5_rec_no_date', 'q6_renewal',
+    'q7_society', 'q8_gst', 'q10_land', 'q11_bank', 'q12_manager', 'q13_status', 'q18_fees', 'q20_other'
 ];
 
 const fileFields = [
@@ -25,7 +29,7 @@ let draftData = {};
 
 async function loadDraft() {
     try {
-        const res = await fetch(`/api/applications/${regId}`, {
+        const res = await fetch(`${API_BASE}/api/applications/${regId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -34,7 +38,9 @@ async function loadDraft() {
             
             staticFields.forEach(id => {
                 const el = document.getElementById(id);
-                if (el && draftData[id]) el.value = draftData[id];
+                if (el && draftData[id]) {
+                    el.value = draftData[id];
+                }
             });
             
             fileFields.forEach(id => {
@@ -98,7 +104,7 @@ function addTableRow(tableId, data = null) {
                 <td><input type="text" class="tbl-input-num grand-t" placeholder="0" value="${data ? data.grand_total : '0'}" readonly style="background:#e5e7eb; font-weight:bold;"></td>`;
     }
     
-    html += `<td><button type="button" class="row-del-btn" onclick="this.closest('tr').remove()">X</button></td>`;
+    html += `<td><button type="button" class="btn-del-row row-del-btn">Remove</button></td>`;
     tr.innerHTML = html;
     
     // Add event listeners for auto-calc on table-q19
@@ -184,7 +190,7 @@ async function uploadFile(fileInputId) {
     
     showToast('Uploading file...', 'success');
     try {
-        const res = await fetch('/api/documents/upload', {
+        const res = await fetch(`${API_BASE}/api/documents/upload`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
@@ -204,67 +210,73 @@ async function uploadFile(fileInputId) {
 }
 
 async function saveStep(stepNum) {
-    let payload = {};
-    if (stepNum === 1) {
-        payload.q1_name = document.getElementById('q1_name').value;
-        payload.q2_address = document.getElementById('q2_address').value;
-        payload.q3_year = document.getElementById('q3_year').value;
-        payload.q4_rec_details = document.getElementById('q4_rec_details').value;
-        payload.q5_rec_no_date = document.getElementById('q5_rec_no_date').value;
-        payload.q6_renewal = document.getElementById('q6_renewal').value;
-        
-        if (document.getElementById('q5_upload').files.length) {
-            const url = await uploadFile('q5_upload');
-            if (url) payload.q5_upload = url;
-        } else if (draftData.q5_upload) payload.q5_upload = draftData.q5_upload;
-    } else if (stepNum === 2) {
-        payload.q7_society = document.getElementById('q7_society').value;
-        payload.q8_gst = document.getElementById('q8_gst').value;
-        payload.q10_land = document.getElementById('q10_land').value;
-        
-        for (let id of ['q7_upload', 'q8_upload', 'q10_upload']) {
-            if (document.getElementById(id).files.length) {
-                const url = await uploadFile(id);
-                if (url) payload[id] = url;
-            } else if (draftData[id]) payload[id] = draftData[id];
-        }
-    } else if (stepNum === 3) {
-        payload.q11_bank = document.getElementById('q11_bank').value;
-        payload.q12_manager = document.getElementById('q12_manager').value;
-        payload.q13_status = document.getElementById('q13_status').value;
-        
-        if (document.getElementById('q11_upload').files.length) {
-            const url = await uploadFile('q11_upload');
-            if (url) payload.q11_upload = url;
-        } else if (draftData.q11_upload) payload.q11_upload = draftData.q11_upload;
-        
-        payload.q9_members = getTableData('table-q9');
-    } else if (stepNum === 4) {
-        payload.q18_fee = document.getElementById('q18_fee').value;
-        payload.q20_other = document.getElementById('q20_other').value;
-        
-        for (let id of ['q14_upload', 'q16_upload', 'q17_upload', 'justification_upload']) {
-            const el = document.getElementById(id);
-            if (el && el.files.length) {
-                const url = await uploadFile(id);
-                if (url) payload[id] = url;
-            } else if (draftData[id]) {
-                payload[id] = draftData[id];
-            }
-        }
-        
-        payload.q15_staff = getTableData('table-q15');
-        payload.q19_classes = getTableData('table-q19');
+    const nextBtn = document.getElementById(`btn-next-${stepNum}`) || document.getElementById('btn-review');
+    const originalText = nextBtn ? nextBtn.innerText : '';
+    if (nextBtn) {
+        nextBtn.innerText = "Saving...";
+        nextBtn.disabled = true;
     }
 
     try {
-        const res = await fetch(`/api/applications/${regId}/step/${stepNum}`, {
+        let payload = {};
+        if (stepNum === 1) {
+            payload.q4_rec_details = document.getElementById('q4_rec_details').value;
+            payload.q5_rec_no_date = document.getElementById('q5_rec_no_date').value;
+            payload.q6_renewal = document.getElementById('q6_renewal').value;
+            
+            if (document.getElementById('q5_upload').files.length) {
+                const url = await uploadFile('q5_upload');
+                if (url) payload.q5_upload = url;
+            } else if (draftData.q5_upload) payload.q5_upload = draftData.q5_upload;
+        } else if (stepNum === 2) {
+            payload.q7_society = document.getElementById('q7_society').value;
+            payload.q8_gst = document.getElementById('q8_gst').value;
+            payload.q10_land = document.getElementById('q10_land').value;
+            
+            for (let id of ['q7_upload', 'q8_upload', 'q10_upload']) {
+                if (document.getElementById(id).files.length) {
+                    const url = await uploadFile(id);
+                    if (url) payload[id] = url;
+                } else if (draftData[id]) payload[id] = draftData[id];
+            }
+        } else if (stepNum === 3) {
+            payload.q11_bank = document.getElementById('q11_bank').value;
+            payload.q12_manager = document.getElementById('q12_manager').value;
+            payload.q13_status = document.getElementById('q13_status').value;
+            
+            if (document.getElementById('q11_upload').files.length) {
+                const url = await uploadFile('q11_upload');
+                if (url) payload.q11_upload = url;
+            } else if (draftData.q11_upload) payload.q11_upload = draftData.q11_upload;
+            
+            payload.q9_members = getTableData('table-q9');
+        } else if (stepNum === 4) {
+            payload.q18_fees = document.getElementById('q18_fees').value;
+            payload.q20_other = document.getElementById('q20_other').value;
+            
+            for (let id of ['q14_upload', 'q16_upload', 'q17_upload', 'justification_upload']) {
+                const el = document.getElementById(id);
+                if (el && el.files.length) {
+                    const url = await uploadFile(id);
+                    if (url) payload[id] = url;
+                } else if (draftData[id]) {
+                    payload[id] = draftData[id];
+                }
+            }
+            
+            payload.q15_staff = getTableData('table-q15');
+            payload.q19_classes = getTableData('table-q19');
+        }
+        
+        const res = await fetch(`${API_BASE}/api/applications/${regId}/step/${stepNum}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(payload)
         });
+        
         const data = await res.json();
-        if (data.ok) {
+        
+        if (res.ok) {
             showToast(`Step ${stepNum} Auto-Saved!`);
             Object.assign(draftData, payload);
             return true;
@@ -296,10 +308,10 @@ function prevStep(current) {
 
 function goToStep(step) {
     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.step-indicator').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.wizard-step').forEach(i => i.classList.remove('active'));
     
     const targetStep = document.getElementById('step-' + step);
-    const targetInd = document.getElementById('ind-' + step);
+    const targetInd = document.getElementById('step-ind-' + step);
     
     if (targetStep) targetStep.classList.add('active');
     if (targetInd) targetInd.classList.add('active');
@@ -309,32 +321,14 @@ async function submitApplication() {
     const success = await saveStep(4);
     if (!success) return;
 
-    showToast('Validating Affidavits & Preparing Review...');
-    try {
-        const res = await fetch(`/api/applications/${regId}/validate`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.ok) {
-            window.location.href = 'review.html';
-        } else {
-            if (data.details) {
-                const msgs = data.details.map(d => d.message).join(', ');
-                alert(`Final Validation Error:\n\n` + msgs);
-            } else {
-                alert(data.message || data.error || 'Submission failed');
-            }
-        }
-    } catch (err) {
-        showToast('Server error', 'error');
-    }
+    showToast('Preparing Review...');
+    setTimeout(() => {
+        window.location.href = 'review.html';
+    }, 500);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDraft();
-
-    document.getElementById('btn_back')?.addEventListener('click', () => window.location.href = 'dashboard.html');
     
     document.getElementById('btn-next-1')?.addEventListener('click', () => nextStep(1));
     document.getElementById('btn-prev-2')?.addEventListener('click', () => prevStep(2));
@@ -347,12 +341,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-add-q15')?.addEventListener('click', () => addTableRow('table-q15'));
     document.getElementById('btn-add-q19')?.addEventListener('click', () => addTableRow('table-q19'));
     document.getElementById('btn-prev-4')?.addEventListener('click', () => prevStep(4));
-    document.getElementById('btn-submit-app')?.addEventListener('click', submitApplication);
+    document.getElementById('btn-review')?.addEventListener('click', submitApplication);
 
     // Event delegation for dynamic delete buttons
     document.addEventListener('click', (e) => {
         if(e.target && e.target.classList.contains('row-del-btn')) {
-            e.target.parentElement.parentElement.remove();
+            e.target.closest('tr').remove();
         }
     });
 });

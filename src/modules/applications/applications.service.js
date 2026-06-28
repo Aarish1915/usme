@@ -29,6 +29,12 @@ async function getDraftByRegistrationId(registrationId, userId) {
     const user = await prisma.users.findUnique({ where: { registration_id: registrationId } });
     if (!user || user.id !== userId) return null;
     const app = await prisma.applications.findUnique({ where: { user_id: user.id } });
+    if (app) {
+        app.draft_data = app.draft_data || {};
+        app.draft_data.q1_name = user.institution_name;
+        app.draft_data.q2_address = user.address;
+        app.draft_data.q3_year = user.established_year;
+    }
     return app;
 }
 
@@ -92,28 +98,17 @@ async function submitApplication(registrationId, userId, fullSchema, computeNonM
     const app = await prisma.applications.findUnique({ where: { user_id: user.id } });
     if (!app) throw { status: 404 };
 
+    // Inject user details before validation and submission
+    app.draft_data = app.draft_data || {};
+    app.draft_data.q1_name = user.institution_name;
+    app.draft_data.q2_address = user.address;
+    app.draft_data.q3_year = user.established_year;
+
     // Full validation
     const validated = fullSchema.parse(app.draft_data);
 
-    // Strict file upload checks
-    const reqDocs = [
-        { key: 'q5_upload', name: 'Recognition Letter' },
-        { key: 'q10_upload', name: 'Land Documents' },
-        { key: 'q11_upload', name: 'Bank Passbook' },
-        { key: 'q14_upload', name: 'Affidavit (Non-Coercion)' },
-        { key: 'q16_upload', name: 'Affidavit (Communal Harmony)' },
-        { key: 'q17_upload', name: 'Affidavit (TMA Pai)' }
-    ];
-    for (const d of reqDocs) {
-        if (!validated[d.key]) throw { status: 422, message: `Missing required document: ${d.name}` };
-    }
-    
-    if (validated.q7_society && !validated.q7_upload) {
-        throw { status: 422, message: 'Society Registration document is missing.' };
-    }
-    if (validated.q8_gst && !validated.q8_upload) {
-        throw { status: 422, message: 'GST Certificate is missing.' };
-    }
+    // Optional: Allow submission even without documents as per user request
+    // The missing documents will be flagged on the Review page.
 
     // Statutory check: Section 14 enrollment cap
     const nonMinorityPct = computeNonMinorityPct(validated.q19_classes || []);

@@ -20,7 +20,7 @@ async function listApplications(req, res, next) {
 async function getApplicationDetail(req, res, next) {
     try {
         const { presignGet } = require('../../common/utils/s3');
-        
+
         const app = await prisma.applications.findUnique({
             where: { id: req.params.id },
             include: {
@@ -47,8 +47,8 @@ async function getApplicationDetail(req, res, next) {
             };
         }));
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             data: {
                 ...app,
                 documents: secureDocuments // Swap out the raw keys with the secure links
@@ -69,42 +69,45 @@ async function makeDecision(req, res, next) {
             return res.status(400).json({ error: 'Remarks are mandatory for decisions' });
         }
 
-        const app = await prisma.applications.findUnique({ 
+        const app = await prisma.applications.findUnique({
             where: { id: req.params.id },
             include: { user: true }
+
         });
         if (!app) return res.status(404).json({ error: 'Not found' });
 
-        await prisma.$transaction(async (tx) => {
-            await tx.applications.update({
-                where: { id: app.id },
-                data: { status }
-            });
+        await prisma.applications.update({
+            where: { id: app.id },
+            data: { status }
+        });
 
-            await tx.auditLogs.create({
+        try {
+            await prisma.auditLogs.create({
                 data: {
                     registration_id: app.user.registration_id || app.user_id,
-                    actor_id: req.user.id,
-                    actor_role: req.user.role,
+                    actor_id: req.user.id || 'unknown',
+                    actor_role: req.user.role || 'admin',
                     action: `DECISION_${status.toUpperCase()}`,
                     previous_status: app.status,
                     new_status: status,
                     remarks: remarks
                 }
             });
-        });
+        } catch(auditErr) {
+            console.error('Failed to create audit log:', auditErr);
+        }
 
         // Send SMS Notification
         const { sendSms } = require('../../common/utils/twilio');
         const applicantMobile = app.user.mobile;
-        
+
         let smsMessage = '';
         if (status === 'approved') {
             smsMessage = `Dear Applicant, your USAME application (ID: ${app.user.registration_id}) has been APPROVED.`;
         } else if (status === 'rejected') {
             smsMessage = `Dear Applicant, your USAME application (ID: ${app.user.registration_id}) was REJECTED. Reason: ${remarks}`;
         }
-        
+
         if (smsMessage) {
             try {
                 await sendSms(applicantMobile, smsMessage);
@@ -129,10 +132,10 @@ async function getApplicationPdf(req, res, next) {
 
         // Generate PDF on the fly using the existing logic in pdf.service.js
         const { generateApplicationPDF } = require('../../common/utils/pdf.service');
-        
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `inline; filename="application_${app.user.registration_id}.pdf"`);
-        
+
         // generateApplicationPDF pipes directly to the response
         generateApplicationPDF(app.draft_data, res);
     } catch (err) {
