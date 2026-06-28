@@ -121,7 +121,8 @@ async function login(req, res) {
             data: { token, registrationId: user.registration_id }
         });
     } catch (error) {
-        return res.status(500).json({ error: 'Internal Server Error' });
+        console.error("Login Error:", error);
+        return res.status(500).json({ error: 'Internal Server Error', details: error.message || String(error) });
     }
 }
 
