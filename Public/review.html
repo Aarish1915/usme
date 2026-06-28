@@ -3,120 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Application - USAME</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Review Application - USAME Portal</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .review-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .review-item { display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding: 12px 0; }
-        .review-item:last-child { border-bottom: none; }
-        .review-label { font-weight: 600; color: #4b5563; width: 45%; padding-right: 15px; line-height: 1.4; }
-        .hi-label { display: block; font-size: 0.85em; font-weight: normal; color: #6b7280; margin-top: 2px; }
-        .review-value { font-weight: 500; color: #111827; width: 55%; text-align: right; word-break: break-word; }
+        .review-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .warning-banner {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 16px 20px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .warning-banner svg {
+            color: #ef4444;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .warning-banner p {
+            color: #991b1b;
+            font-size: 0.95rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .missing-data-banner {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .missing-data-banner svg {
+            color: #f59e0b;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .missing-data-banner p {
+            color: #b45309;
+            font-size: 0.95rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .review-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .review-card-header {
+            background: var(--bg-light);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .review-card-header h3 {
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+            margin: 0;
+            flex: 1;
+        }
+
+        .btn-edit {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-edit:hover {
+            color: var(--primary-navy);
+            border-color: var(--primary-navy);
+            background: rgba(30, 58, 138, 0.05);
+        }
+
+        .review-card-body {
+            padding: 24px;
+        }
+
+        .data-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-light);
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .data-label {
+            flex: 1;
+            max-width: 40%;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding-right: 16px;
+        }
+
+        .data-label span.hi {
+            display: block;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .data-value {
+            flex: 1;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .data-value.missing {
+            color: #ef4444;
+            font-style: italic;
+        }
+
+        .file-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--primary-navy);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .file-chip:hover {
+            background: #e2e8f0;
+        }
+
+        .file-chip.missing {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #ef4444;
+            pointer-events: none;
+        }
+
+        .review-table-container {
+            margin-top: 16px;
+        }
         
-        .success-box { text-align: center; display: none; padding: 40px; }
-        .success-icon { font-size: 50px; color: var(--success); margin-bottom: 20px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; table-layout: fixed; }
-        th, td { border: 1px solid #d1d5db; padding: 10px; text-align: left; font-size: 13px; word-wrap: break-word; }
-        th { background: #f3f4f6; font-weight: 600; color: #374151; text-align: center; }
-        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 10px; border-radius: 6px; border: 1px solid #e5e7eb; }
+        .success-box { text-align: center; display: none; padding: 60px 20px; }
+        .success-icon { font-size: 64px; color: var(--success); margin-bottom: 24px; }
+        .success-box h2 { color: var(--primary-navy); font-size: 2rem; margin-bottom: 12px; }
+
+        @media (max-width: 768px) {
+            .data-row { flex-direction: column; gap: 8px; }
+            .data-label { max-width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="brand">
-            <div><h1>Application Review</h1><p>Final Check Before Submission</p></div>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div style="display: flex; align-items: center; gap: 32px;">
+            <a href="dashboard.html" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Dashboard
+            </a>
+            <div class="top-nav-brand" style="border-left: 1px solid rgba(255,255,255,0.2); padding-left: 32px;">Application Review</div>
         </div>
-        <button class="btn btn-secondary" style="padding: 8px 15px; width: auto;" id="btn-rev-back">Back to Edit</button>
-    </header>
+        <div class="top-nav-right">
+            <button class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3);" id="btn-rev-back">Edit Application</button>
+        </div>
+    </nav>
 
-    <main>
-        <div class="glass-card" id="review-container">
-            <h2 style="text-align: left;">Please review your details carefully</h2>
-            <p style="margin-bottom: 20px; color: var(--danger); font-weight: 500;">Warning: Once submitted, you cannot edit this application.</p>
-
-            <div class="review-box">
-                <h3>1. Basic Details</h3>
-                <div class="review-item"><div class="review-label">1. Institution Name<span class="hi-label">संस्थान / विद्यालय का नाम</span></div><div class="review-value" id="rev_q1">Loading...</div></div>
-                <div class="review-item"><div class="review-label">2. Address<span class="hi-label">पत्र व्यवहार का पूर्ण पता</span></div><div class="review-value" id="rev_q2">Loading...</div></div>
-                <div class="review-item"><div class="review-label">3. Established Year<span class="hi-label">स्थापना वर्ष</span></div><div class="review-value" id="rev_q3">Loading...</div></div>
-                <div class="review-item"><div class="review-label">4. Recognition Details<span class="hi-label">मान्यता / सम्बद्धता विवरण</span></div><div class="review-value" id="rev_q4">Loading...</div></div>
-                <div class="review-item"><div class="review-label">5. Recognition No/Date<span class="hi-label">मान्यता पत्र संख्या एवं दिनांक</span></div><div class="review-value" id="rev_q5">Loading...</div></div>
-                <div class="review-item"><div class="review-label">6. Renewal Details<span class="hi-label">पंजीकरण या नवीनीकरण संख्या</span></div><div class="review-value" id="rev_q6">Loading...</div></div>
+    <main class="review-container">
+        <div id="review-content">
+            <div class="page-header" style="margin-bottom: 24px;">
+                <h1>Final Review</h1>
+                <p>Please review your details carefully before final submission.</p>
             </div>
 
-            <div class="review-box">
-                <h3>2. Society & Land Details</h3>
-                <div class="review-item"><div class="review-label">7. Society Details<span class="hi-label">सोसाइटी / ट्रस्ट पंजीकरण</span></div><div class="review-value" id="rev_q7">Loading...</div></div>
-                <div class="review-item"><div class="review-label">8. GST Number<span class="hi-label">जीएसटी पंजीकरण संख्या</span></div><div class="review-value" id="rev_q8">Loading...</div></div>
-                <div class="review-item"><div class="review-label">10. Land Ownership<span class="hi-label">स्वामित्व / पट्टा विवरण</span></div><div class="review-value" id="rev_q10">Loading...</div></div>
-            </div>
-
-            <div class="review-box">
-                <h3>3. Management & Banking</h3>
-                <div class="review-item"><div class="review-label">11. Bank Account<span class="hi-label">खाता सं., IFSC, बैंक का नाम</span></div><div class="review-value" id="rev_q11">Loading...</div></div>
-                <div class="review-item"><div class="review-label">12. Managed By<span class="hi-label">किसके द्वारा संचालित है</span></div><div class="review-value" id="rev_q12">Loading...</div></div>
-                <div class="review-item"><div class="review-label">13. Status<span class="hi-label">प्रबन्ध की स्थिति</span></div><div class="review-value" id="rev_q13">Loading...</div></div>
-                
-                <h4 style="margin-top: 15px;">9. Management Committee Members <span class="hi-label" style="display:inline;">(प्रारूप I)</span></h4>
-                <div class="table-responsive">
-                    <table id="rev_q9_table">
-                        <thead><tr><th>Name</th><th>Father's Name</th><th>DOB</th><th>Designation</th><th>Address</th><th>Phone</th><th>Qualification</th><th>Experience</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="warning-banner">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <div>
+                    <p><strong>Warning:</strong> Once submitted, you cannot edit this application. If any data is incorrect, click "Edit" on the respective section to make changes.</p>
                 </div>
             </div>
 
-            <div class="review-box">
-                <h3>4. Staff & Students</h3>
-                <div class="review-item"><div class="review-label">18. Fee Details<span class="hi-label">निर्धारित शुल्क का विवरण</span></div><div class="review-value" id="rev_q18">Loading...</div></div>
-                <div class="review-item"><div class="review-label">20. Other Details<span class="hi-label">अन्य विवरण</span></div><div class="review-value" id="rev_q20">Loading...</div></div>
-                
-                <h4 style="margin-top: 15px;">15. Teaching & Non-Teaching Staff <span class="hi-label" style="display:inline;">(प्रारूप II)</span></h4>
-                <div class="table-responsive">
-                    <table id="rev_q15_table">
-                        <colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
-                        <thead><tr><th>Name</th><th>Designation</th><th>Address & Phone</th><th>Profession</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="margin-top: 15px;">19. Student Strength <span class="hi-label" style="display:inline;">(प्रारूप III)</span></h4>
-                <div class="table-responsive">
-                    <table id="rev_q19_table">
-                        <thead>
-                            <tr>
-                                <th rowspan="2" style="vertical-align:bottom">Class</th>
-                                <th colspan="3">Minority</th>
-                                <th colspan="3">Others</th>
-                                <th rowspan="2" style="vertical-align:bottom">Grand Total</th>
-                            </tr>
-                            <tr>
-                                <th>Boys</th><th>Girls</th><th>Total</th>
-                                <th>Boys</th><th>Girls</th><th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="missing-data-banner" id="missing-data-banner">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <div>
+                    <p><strong>Missing Information:</strong> Some fields are incomplete. Please complete all missing fields before submitting.</p>
                 </div>
             </div>
 
-            <div class="review-box" id="docs-box">
-                <h3>5. Uploaded Documents</h3>
-                <!-- Document links will be injected here -->
+            <!-- Card 1: Basic Details -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <h3>1. Basic Details</h3>
+                    <button class="btn-edit">Edit</button>
+                </div>
+                <div class="review-card-body">
+                    <div class="data-row">
+                        <div class="data-label">Institution Name <span class="hi">संस्थान / विद्यालय का नाम</span></div>
+                        <div class="data-value" id="rev_q1">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Address <span class="hi">पत्र व्यवहार का पूर्ण पता</span></div>
+                        <div class="data-value" id="rev_q2">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Established Year <span class="hi">स्थापना वर्ष</span></div>
+                        <div class="data-value" id="rev_q3">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Recognition Details <span class="hi">मान्यता / सम्बद्धता विवरण</span></div>
+                        <div class="data-value" id="rev_q4">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Recognition No & Date <span class="hi">मान्यता पत्र संख्या एवं दिनांक</span></div>
+                        <div class="data-value" id="rev_q5">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Renewal Details <span class="hi">पंजीकरण या नवीनीकरण</span></div>
+                        <div class="data-value" id="rev_q6">Loading...</div>
+                    </div>
+                </div>
             </div>
 
-            <button class="btn" style="background: var(--primary);" id="btn-final-submit" >Acknowledge & Final Submit</button>
+            <!-- Card 2: Society & Land -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <h3>2. Society & Land Details</h3>
+                    <button class="btn-edit">Edit</button>
+                </div>
+                <div class="review-card-body">
+                    <div class="data-row">
+                        <div class="data-label">Society Details <span class="hi">सोसाइटी / ट्रस्ट पंजीकरण</span></div>
+                        <div class="data-value" id="rev_q7">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">GST Number <span class="hi">जीएसटी पंजीकरण संख्या</span></div>
+                        <div class="data-value" id="rev_q8">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Land Ownership <span class="hi">स्वामित्व / पट्टा विवरण</span></div>
+                        <div class="data-value" id="rev_q10">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Management -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <h3>3. Management & Banking</h3>
+                    <button class="btn-edit">Edit</button>
+                </div>
+                <div class="review-card-body">
+                    <div class="data-row">
+                        <div class="data-label">Bank Account <span class="hi">खाता सं., IFSC, बैंक का नाम</span></div>
+                        <div class="data-value" id="rev_q11">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Managed By <span class="hi">किसके द्वारा संचालित है</span></div>
+                        <div class="data-value" id="rev_q12">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Management Status <span class="hi">प्रबन्ध की स्थिति</span></div>
+                        <div class="data-value" id="rev_q13">Loading...</div>
+                    </div>
+                    
+                    <h4 style="margin-top: 24px; color: var(--primary-navy);">Management Committee Members <span class="hi" style="display:inline; color: var(--text-muted); font-size: 0.85rem;">(प्रारूप I)</span></h4>
+                    <div class="table-container review-table-container table-responsive">
+                        <table id="rev_q9_table">
+                            <thead><tr><th>Name</th><th>Father's Name</th><th>DOB</th><th>Designation</th><th>Address</th><th>Phone</th><th>Qualification</th><th>Experience</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Staff & Students -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <h3>4. Staff & Students</h3>
+                    <button class="btn-edit">Edit</button>
+                </div>
+                <div class="review-card-body">
+                    <div class="data-row">
+                        <div class="data-label">Fee Details <span class="hi">निर्धारित शुल्क का विवरण</span></div>
+                        <div class="data-value" id="rev_q18">Loading...</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Other Details <span class="hi">अन्य विवरण</span></div>
+                        <div class="data-value" id="rev_q20">Loading...</div>
+                    </div>
+                    
+                    <h4 style="margin-top: 24px; color: var(--primary-navy);">Staff Details <span class="hi" style="display:inline; color: var(--text-muted); font-size: 0.85rem;">(प्रारूप II)</span></h4>
+                    <div class="table-container review-table-container table-responsive">
+                        <table id="rev_q15_table">
+                            <thead><tr><th>Name</th><th>Designation</th><th>Address & Phone</th><th>Profession</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin-top: 24px; color: var(--primary-navy);">Student Strength <span class="hi" style="display:inline; color: var(--text-muted); font-size: 0.85rem;">(प्रारूप III)</span></h4>
+                    <div class="table-container review-table-container table-responsive">
+                        <table id="rev_q19_table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="vertical-align:bottom">Class</th>
+                                    <th colspan="3" class="text-center" style="border-left:1px solid var(--border)">Minority</th>
+                                    <th colspan="3" class="text-center" style="border-left:1px solid var(--border)">Others</th>
+                                    <th rowspan="2" style="vertical-align:bottom; border-left:1px solid var(--border)">Grand Total</th>
+                                </tr>
+                                <tr>
+                                    <th style="border-left:1px solid var(--border)">Boys</th><th>Girls</th><th>Total</th>
+                                    <th style="border-left:1px solid var(--border)">Boys</th><th>Girls</th><th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Card -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                    <h3>5. Attached Documents</h3>
+                    <button class="btn-edit">Edit</button>
+                </div>
+                <div class="review-card-body">
+                    <div style="display: flex; flex-wrap: wrap; gap: 16px;" id="docs-box">
+                        <!-- File chips injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 16px;">
+                <button type="button" class="btn btn-outline" id="btn-rev-back-2">Return to Edit</button>
+                <button type="button" class="btn btn-primary" id="btn-final-submit">Acknowledge & Final Submit &rarr;</button>
+                <button type="button" class="btn btn-success" id="btn-dl-pdf-submitted" style="display: none; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download Official PDF
+                </button>
+            </div>
         </div>
 
-        <div class="glass-card success-box" id="success-container">
+        <div class="review-card success-box" id="success-container">
             <div class="success-icon">✔️</div>
             <h2>Application Submitted Successfully!</h2>
-            <p style="margin-bottom: 30px;">Your application has been received by the Uttarakhand State Minority Education Authority.</p>
-            <button class="btn" style="background: #10b981; max-width: 300px; margin: 0 auto;" id="btn-dl-pdf">📄 Download Official PDF</button>
-            <br>
-            <button class="btn btn-secondary" style="max-width: 300px; margin: 0 auto;" id="btn-rev-dash">Go to Dashboard</button>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 32px;">Your application has been received by the Uttarakhand State Minority Education Authority.</p>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <button class="btn btn-success" id="btn-dl-pdf" style="gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download Official PDF
+                </button>
+                <button class="btn btn-outline" id="btn-view-submitted">View Submitted Form</button>
+            </div>
         </div>
     </main>
 
