@@ -8,107 +8,94 @@ datasource db {
 }
 
 model Users {
-  id            String   @id @default(uuid())
-  registration_id String @unique @default(dbgenerated("concat('USAME-', to_char(CURRENT_DATE, 'YYYYMMDD'), '-', floor(random() * 9000 + 1000)::text)"))
-  email         String?  @unique
-  mobile        String   @unique
-  name          String?
-  password_hash String
-  role          String   @default("applicant") // 'applicant' or 'admin'
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  applications  Applications?
+  id              String        @id @default(uuid())
+  registration_id String        @unique @default(dbgenerated("concat('USAME-', to_char((CURRENT_DATE)::timestamp with time zone, 'YYYYMMDD'::text), '-', (floor(((random() * (9000)::double precision) + (1000)::double precision)))::text)"))
+  email           String?       @unique
+  mobile          String        @unique
+  name            String?
+  password_hash   String
+  role            String        @default("applicant")
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  applications    Applications?
 }
 
 model Applications {
-  id              String   @id @default(uuid())
-  user_id         String   @unique
-  status          String   @default("draft") // 'draft', 'submitted', 'under_review', 'approved'
-  
-  // THE MAGIC FIELD: This stores the entire form as they type it, step by step
-  draft_data      Json?    @default("{}")
-  
-  current_step    Int      @default(1)
-  version         Int      @default(1)
-  
-  // Final normalized fields (Populated ONLY when the user hits 'Submit' after Review)
-  institution_name String?
-  established_year String?
-  
-  submitted_at    DateTime?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  user            Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  documents       Documents[]
+  id                   String                @id @default(uuid())
+  user_id              String                @unique
+  status               String                @default("draft")
+  draft_data           Json?                 @default("{}")
+  current_step         Int                   @default(1)
+  version              Int                   @default(1)
+  institution_name     String?
+  established_year     String?
+  submitted_at         DateTime?
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+  user                 Users                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  documents            Documents[]
   management_committee ManagementCommittee[]
-  staff_roster    StaffRoster[]
+  staff_roster         StaffRoster[]
   student_demographics StudentDemographics[]
 
   @@index([status, created_at])
 }
 
 model Documents {
-  id              String   @id @default(uuid())
-  application_id  String
-  document_type   String   // 'GST', 'PASSBOOK', 'AFFIDAVIT_TMA_PAI', 'AFFIDAVIT_HARMONY', etc.
-  s3_key          String   @unique // URL to the file in AWS S3 / Local storage
-  uploaded_at     DateTime @default(now())
-
-  application     Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
+  id             String       @id @default(uuid())
+  application_id String
+  document_type  String
+  s3_key         String       @unique
+  uploaded_at    DateTime     @default(now())
+  application    Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
 }
 
 model ManagementCommittee {
-  id                  String   @id @default(uuid())
-  application_id      String
-  member_name         String
-  father_name         String?
-  dob                 String?
-  designation         String?
-  address             String?
-  phone               String?
-  qualification       String?
-  experience          String?
-
-  application         Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
+  id             String       @id @default(uuid())
+  application_id String
+  member_name    String
+  father_name    String?
+  dob            String?
+  designation    String?
+  address        String?
+  phone          String?
+  qualification  String?
+  experience     String?
+  application    Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
 }
 
 model StaffRoster {
-  id                  String   @id @default(uuid())
-  application_id      String
-  name                String
-  designation         String?
-  address             String?
-  profession          String?
-
-  application         Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
+  id             String       @id @default(uuid())
+  application_id String
+  name           String
+  designation    String?
+  address        String?
+  profession     String?
+  application    Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
 }
 
 model StudentDemographics {
-  id                  String   @id @default(uuid())
-  application_id      String
-  class_level         String
-  minority_boys       Int @default(0)
-  minority_girls      Int @default(0)
-  minority_total      Int @default(0)
-  others_boys         Int @default(0)
-  others_girls        Int @default(0)
-  others_total        Int @default(0)
-  grand_total         Int @default(0)
-
-  application         Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
+  id             String       @id @default(uuid())
+  application_id String
+  class_level    String
+  minority_boys  Int          @default(0)
+  minority_girls Int          @default(0)
+  minority_total Int          @default(0)
+  others_boys    Int          @default(0)
+  others_girls   Int          @default(0)
+  others_total   Int          @default(0)
+  grand_total    Int          @default(0)
+  application    Applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
 }
 
 model AuditLogs {
-  id                  String   @id @default(uuid())
-  registration_id     String
-  actor_id            String
-  actor_role          String
-  action              String
-  previous_status     String?
-  new_status          String?
-  remarks             String?
-  created_at          DateTime @default(now())
+  id              String   @id @default(uuid())
+  registration_id String
+  actor_id        String
+  actor_role      String
+  action          String
+  previous_status String?
+  new_status      String?
+  remarks         String?
+  created_at      DateTime @default(now())
 }
-
