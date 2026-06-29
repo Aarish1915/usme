@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (data) {
             populateReview(data.draft_data || {});
             
-            // If already submitted, hide edit/submit buttons and show PDF button
-            if (data.status !== 'draft') {
+            // If submitted or approved, hide edit/submit buttons and show PDF button
+            if (data.status === 'submitted' || data.status === 'under_review' || data.status === 'approved') {
                 document.getElementById('btn-rev-back').style.display = 'none';
                 document.getElementById('btn-rev-back-2').style.display = 'none';
                 document.getElementById('btn-final-submit').style.display = 'none';

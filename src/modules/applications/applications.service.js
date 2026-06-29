@@ -31,9 +31,6 @@ async function getDraftByRegistrationId(registrationId, userId) {
     const app = await prisma.applications.findUnique({ where: { user_id: user.id } });
     if (app) {
         app.draft_data = app.draft_data || {};
-        app.draft_data.q1_name = user.institution_name;
-        app.draft_data.q2_address = user.address;
-        app.draft_data.q3_year = user.established_year;
     }
     return app;
 }

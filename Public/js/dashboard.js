@@ -67,17 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (app.status === 'submitted' || app.status === 'under_review') badgeClass = 'badge-warning';
             else if (app.status === 'override_pending') badgeClass = 'badge-info';
 
+            // Hide the sidebar "Start New Application" button because they already have one
+            if (btnNewApp) {
+                btnNewApp.style.display = 'none';
+            }
+
             // Buttons HTML
             let buttonsHtml = '';
-            if (app.status === 'draft') {
-                buttonsHtml = `<button class="btn btn-primary" id="btn-resume-draft">Resume Draft &rarr;</button>`;
+            if (app.status === 'draft' || app.status === 'rejected') {
+                let btnText = app.status === 'rejected' ? 'Edit Application &rarr;' : 'Continue Application &rarr;';
+                buttonsHtml = `<button class="btn btn-primary" id="btn-resume-draft">${btnText}</button>`;
             } else {
                 buttonsHtml = `
                     <button class="btn btn-outline" id="btn-view-details">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         View Form Details
                     </button>
-                    ${(app.status === 'approved' || app.status === 'submitted') ? `
+                    ${(app.status === 'approved' || app.status === 'submitted' || app.status === 'under_review') ? `
                     <button class="btn btn-outline" style="color: var(--success); border-color: var(--success);" id="btn-dash-dl-pdf">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         Download PDF

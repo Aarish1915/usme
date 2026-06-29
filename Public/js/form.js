@@ -17,6 +17,7 @@ function showToast(message, type = 'success') {
 }
 
 const staticFields = [
+    'q1_name', 'q2_address', 'q3_year',
     'q4_rec_details', 'q5_rec_no_date', 'q6_renewal',
     'q7_society', 'q8_gst', 'q10_land', 'q11_bank', 'q12_manager', 'q13_status', 'q18_fees', 'q20_other'
 ];
